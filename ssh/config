@@ -1,0 +1,11 @@
+Host class
+    HostName class.umiacs.umd.edu
+    User c828l026
+
+Host nexus
+    HostName nexuscfar01.umiacs.umd.edu
+    User mhoover4
+
+Host vulcan
+    HostName vulcansub00.umiacs.umd.edu
+    User mhoover4
