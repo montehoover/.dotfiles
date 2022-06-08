@@ -3,3 +3,5 @@
 	name = Monte Hoover
 [credential]
 	helper = store
+[init]
+	defaultBranch = main
