@@ -13,7 +13,6 @@
         path: ssh/config
         create: true
     ~/.tmux.conf: tmux.conf
-    ~/.zshrc: zshrc
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
