@@ -92,8 +92,13 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
+# ----- Monte's edits: ----- #
 # for tab completion, automatically start inserting completions
 setopt MENU_COMPLETE
+
+# Has aliases and environment variables
+source ~/.profile_shared
+# ----- End Monte's edits ----- #
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -118,6 +123,8 @@ setopt MENU_COMPLETE
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# ----- Things added by installer scripts ------ #
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!

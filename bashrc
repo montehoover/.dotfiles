@@ -1,10 +1,19 @@
 # -------------------
-# Auto-created from WLS Ubuntu 20.04 with edits by Monte
+# Auto-created from WSL Ubuntu 20.04 with edits by Monte
+# Original can be found at /etc/skel
+# 
+# Startup order:
+# If login shell (opening terminal, ssh, etc):
+#     If ~/.bash_profile -> call it
+#     else if ~/.bash_login -> call it
+#     else if ~/.profile -> call it
+#         By convention, ~/.profile will set environment variables and call ~/.bashrc
+# else (if you just called exec bash or something):
+#     Only ~/.bashrc gets called.
 #
-# ~/.bash_profile should be super-simple and just load .profile and .bashrc (in that order)
-# ~/.profile has the stuff NOT specifically related to bash, such as environment variables (PATH and friends)
-# ~/.bashrc has anything you'd want at an interactive command line. Command prompt, EDITOR variable, bash aliases for my use
-#
+# ~/.bashrc should contain anything unique to bash (not applicable to zsh). I chose
+# to make a file called ~/.profile_shared that both ~/.bashrc and ~/.zshrc call for
+# shared suff.
 # -------------------
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
@@ -100,10 +109,12 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
+# --- Monte commenting out on 9JUN22 ---
 # some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+# alias ll='ls -alF'
+# alias la='ls -A'
+# alias l='ls -CF'
+# --- End Monte edit ---
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -129,8 +140,10 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# ---------------------
-# Monte's adds:
+# ---------- Monte's edits: -----------
+
+# Has aliases and environment variables
+source ~/.profile_shared
 
 # Use tab to cycle through options:
 bind TAB:menu-complete
@@ -162,7 +175,11 @@ bind 'set bell-style none'
 # export LSCOLORS=GxFxCxDxBxegedabagaced
 
 # alias ll="ls -la"
-# ----------------------------
+
+# ---------- End Monte's edits -----------
+
+# ---------- Things added by installer scripts ----------
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/home/monte/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"

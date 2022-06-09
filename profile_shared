@@ -1,0 +1,25 @@
+# -------- Monte's notes: -----------
+# ~/.profile is only run for login shells (when the terminal first starts up)
+# when bash is the default shell. So it doesn't get called by zsh, or if switching
+# from zsh to bash. Standard practice is to use ~/.profile to set environment
+# variables and call ~/.bashrc. If we call ~/.profile from ~/.zshrc that works fine,
+# but I prefer to leave this file with Ubuntu defaults and create ~/.profile_shared
+# that is called by both ~/.bashrc and ~/.zshrc. Uncomment the following line to 
+# check when this is being run:
+#
+# echo "Running ~/.profile_shared..."
+# -------- End Monte's notes -----------
+
+# Update path to include non-standard location of executables:
+export PATH=/usr/local/cuda-11.3/bin${PATH:+:${PATH}}
+
+# Aliases I want in both bash and zsh:
+# -a: hidden files, 
+# -A, hidden files but ignore . and ..
+# -l, show in a vertical list with extra info
+# -F, add / to end of folder names (I appreciate)
+# -C, order by columns instead of rows (eh boring)
+# -h, show file sizes in kb, gb, instead of just bytes (maybe good? I actually like it the original way)
+alias ll='ls -laF' # Show it all
+alias l='ls -lF'    # Show the basics in a short list
+alias lsa='ls -AF'   # Show it all, but in condensed ls format
