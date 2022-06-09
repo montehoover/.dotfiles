@@ -80,9 +80,11 @@ ZSH_CUSTOM="$HOME/.dotfiles/.oh-my-zsh-custom"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+    command-not-found
     docker
     git
     python
+    sudo
     zsh-autosuggestions
     # zsh-syntax-highlighting must be last
     zsh-syntax-highlighting
