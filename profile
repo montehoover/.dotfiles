@@ -39,4 +39,3 @@ fi
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
-export PATH=/usr/local/cuda-11.3/bin${PATH:+:${PATH}}
