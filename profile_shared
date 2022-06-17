@@ -23,3 +23,17 @@ export PATH=/usr/local/cuda-11.3/bin${PATH:+:${PATH}}
 alias ll='ls -laF' # Show it all
 alias l='ls -lF'    # Show the basics in a short list
 alias lsa='ls -AF'   # Show it all, but in condensed ls format
+
+# Show Slurm jobs on a cluster. Number indicates spaces for the column info. "." is for right justified.
+# u: USER 
+# i: JOBID 
+# P: PARTITION 
+# T: STATE
+# R: NODE (or reason pending)
+# j: JOBNAME
+# M: TIME
+# l: TIME Requested 
+# C: CPUs Requested
+# m: MEM Requested
+# b: GPUS Requested
+alias sq='squeue -o "%8u %8i %9P %7T %10R %8j %.10M %.10l %2C %.4m %b"'
