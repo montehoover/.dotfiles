@@ -37,4 +37,4 @@ alias lsa='ls -AF'   # Show it all, but in condensed ls format
 # m: MEM Requested
 # b: GPUS Requested
 alias sq='squeue -o "%8u %8i %9P %7T %10R %8j %.10M %.10l %3C %.4m %b"'
-alias sqm='sq --me'
+alias sqm='squeue -o "%8u %8i %9P %7T %R %8j %.10M %.10l %3C %.4m %b" --me'
