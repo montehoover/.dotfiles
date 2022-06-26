@@ -3,7 +3,7 @@
 # when bash is the default shell. So it doesn't get called by zsh, or if switching
 # from zsh to bash. Standard practice is to use ~/.profile to set environment
 # variables and call ~/.bashrc. If we call ~/.profile from ~/.zshrc that works fine,
-# but I prefer to leave this file with Ubuntu defaults and create ~/.profile_shared
+# but I prefer to leave that file with Ubuntu defaults and create ~/.profile_shared
 # that is called by both ~/.bashrc and ~/.zshrc. Uncomment the following line to 
 # check when this is being run:
 #
@@ -28,6 +28,9 @@ alias lsa='ls -AF'   # Show it all, but in condensed ls format
 # u: USER 
 # i: JOBID 
 # P: PARTITION 
+# q: QOS
+# a: Account
+# Q: Priority
 # T: STATE
 # R: NODE (or reason pending)
 # j: JOBNAME
@@ -36,9 +39,7 @@ alias lsa='ls -AF'   # Show it all, but in condensed ls format
 # C: CPUs Requested
 # m: MEM Requested
 # b: GPUS Requested
-alias sq='squeue -o "%8u %8i %9P %7T %10R %8j %.10M %.10l %3C %.4m %b"'
 # --me: just my jobs
-alias sqm='squeue -o "%8u %8i %9P %7T %R %8j %.10M %.10l %3C %.4m %b" --me'
-# Show account and priority information on jobs
-# q: QOS, a: Account, Q: Priority
-alias sqa='squeue -o "%8u %8i %9P %9q %9a %4Q %7T %10R %8j %.10M %.10l %3C %.4m %b"'
+alias sq='squeue -o "%8u %8i %9P %9q %9a %4Q %7T %10R %8j %.10M %.10l %3C %.4m %b"'
+alias sqm='squeue -o "%8u %8i %9P %9q %9a %4Q %7T %10R %8j %.10M %.10l %3C %.4m %b" --me'
+alias sqs='squeue -o "%8u %8i %9P %7T %10R %8j %.10M %.10l %3C %.4m %b"'

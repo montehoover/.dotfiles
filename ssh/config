@@ -9,3 +9,7 @@ Host nexus
 Host vulcan
     HostName vulcansub00.umiacs.umd.edu
     User mhoover4
+
+Host cml
+    HostName cmlsub00.umiacs.umd.edu
+    User mhoover4
