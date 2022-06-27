@@ -1,27 +1,33 @@
 #!/bin/bash
 
+###########################
+# Run a single sbatch job #
+###########################
+
 # Lines that begin with #SBATCH specify commands to be used by SLURM for scheduling. They are not comments.
+# The defaults are all reasonable for small jobs and debugging except that they don't include a gpu. (See below)
 #SBATCH --qos=medium                 
-#SBATCH --ntasks=3
 
 # Run any commands necessary to setup your environment:
 source /etc/profile.d/modules.sh                            # Use this to add module to the path of compute nodes.
 module load Python3/3.9.6
 source $(conda info --base)/etc/profile.d/conda.sh          # Use if conda is already on your path but you still need to run "conda init <shell_name>"       
-conda activate point2mesh
+conda activate base
 
-# Use srun to run job steps. These can be run concurrently if you specify"--exclusive --ntasks=1". 
-# "--exclusive" indicates each step should run on its own CPU and "--ntasks=1" is needed because srun inherits "--ntasks=3" from #SBATCH and using that
-# in all the steps makes 9 total tasks when only 3 were allocated for our job. 
-srun --exclusive --ntasks=1 bash -c "hostname; sleep 12; python3.9 --version;" &    # using an '&' will background the process allowing them to run concurrently.
-srun --exclusive --ntasks=1 bash -c "hostname; sleep 10; python3 --version;" &     
-srun --exclusive --ntasks=1 echo $CONDA_DEFAULT_ENV &                               # $CONDA_DEFAULT_ENV shows the activated env                  
-wait                                                                                # Wait is required to allow any background processes to complete.
-
+# Run the job steps.
+hostname
+python3.9 --version
+echo $CONDA_DEFAULT_ENV                                     # $CONDA_DEFAULT_ENV shows the activated env
+           
 # Once the end of the batch script is reached your job allocation will be revoked (resources freed).
 # Call this from a submission node with "sbatch sbatch_template.sh"
 
-# # SLURM defaults that you might want to change:
+# To run this directly instead of using an sbatch script, use "srun":
+# srun --qos=medium bash -c "hostname && python3.9 --version && echo $CONDA_DEFAULT_ENV"
+# - or - to run interactively use "srun --pty":
+# srun --pty --qos=medium bash
+
+# SLURM defaults that you might want to change:
 # #SBATCH --qos=default                 # The qos parameter doesn't actually have a default - you must specify it. See resources available for each qos below.
 # #SBATCH --partition=dpart             # You must add "--partition=scavenger" if you choose "--qos=scavenger"
 # #SBATCH --account=vulcan              # You must add "--account=<faculty name>" if you choose "--qos=high"
