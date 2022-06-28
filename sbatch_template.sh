@@ -65,8 +65,8 @@ echo $CONDA_DEFAULT_ENV                                     # $CONDA_DEFAULT_ENV
 # $ show_nodes -p tron #nexus
 # NODELIST             CPUS       MEMORY     AVAIL_FEATURES            GRES                             STATE      PARTITION
 # tron[00-05]          32         257540     rhel8,AMD,EPYC-7302       gpu:rtxa6000:8                   idle       tron*
-# tron[06-44]          16         128520     rhel8,AMD,EPYC-7302P      gpu:rtxa4000:4                   mix        tron*
-# tron[45-61]          16         128525     rhel8,AMD,EPYC-7302       gpu:rtxa4000:4                   mix        tron*
+# tron[06-45]          16         128520     rhel8,AMD,EPYC-7302P      gpu:rtxa4000:4                   mix        tron*
+# tron[46-61]          16         257539     rhel8,AMD,EPYC-7302       gpu:rtxa5000:8                   mix        tron*
 
 # $ show_nodes -p dpart #cml
 # NODELIST             CPUS       MEMORY     AVAIL_FEATURES            GRES                             STATE      PARTITION
