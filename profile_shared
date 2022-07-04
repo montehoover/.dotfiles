@@ -41,7 +41,7 @@ alias lsa='ls -AF'   # Show it all, but in condensed ls format
 # b: GPUS Requested
 # --me: just my jobs
 alias sq='squeue -o "%8u %9q %9a %10R %8j %.10M %.10l %3C %.4m %b"'
-alias sqa='squeue -o "%8u %8i %9P %9q %9a %4Q %7T %10R %8j %.10M %.10l %3C %.4m %b"'
+alias sqa='squeue -o "%8u %8i %9P %9q %9a %4Q %7T %R %8j %.10M %.10l %3C %.4m %b"'
 alias sqm='sqa --me'
 
 alias gitpass='git config --global credential.helper store && echo "Ready to save git credentials."'
