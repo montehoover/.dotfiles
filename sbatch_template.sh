@@ -9,7 +9,7 @@
 #SBATCH --qos=medium                 
 
 # Run any commands necessary to setup your environment:
-source /etc/profile.d/modules.sh                            # Use this to add module to the path of compute nodes.
+source /etc/profile.d/modules.sh                            # Use this to add the module command to the path of compute nodes.
 module load Python3/3.9.6
 source $(conda info --base)/etc/profile.d/conda.sh          # Use if conda is already on your path but you still need to run "conda init <shell_name>"       
 conda activate base
@@ -34,7 +34,7 @@ echo $CONDA_DEFAULT_ENV                                     # $CONDA_DEFAULT_ENV
 # #SBATCH --time=0-01:00:00             # Time to reserve for your job. If your job ends before this the resources will be freed. Format=d-hh:mm:ss
 # #SBATCH --mem=8gb                     # For point2mesh runs I needed 32gb in the max cases.
 # #SBATCH --gres=gpu:0                  # Specify how many GPUs and of why type. Ex: gpu:p6000:1, gpu:gtx1080ti:1, gpu:rtx2080ti:1, gpu:rtxa6000:1
-# #SBATCH --ntasks=1                    # Use this to run concurrent commands. If you set "--ntasks=2" you must set "--ntasks=1" down below with srun.
+# #SBATCH --ntasks=1                    # Use this to run concurrent commands. If you set "--ntasks=2" you must set "--ntasks=1 --exclusive" with srun for your job steps.
 # #SBATCH --array=1-1:1                 # Use this to run concurrent jobs.
 # #SBATCH --job-name=sbatch_template    # Takes the name of this script as the job name by default.
 # #SBATCH --output="slurm-%j.out"       # indicates a file to redirect STDOUT to; %j is the jobid. Must be set to a file instead of a directory or else submission will fail.
@@ -59,7 +59,8 @@ echo $CONDA_DEFAULT_ENV                                     # $CONDA_DEFAULT_ENV
 # NODELIST             CPUS       MEMORY     AVAIL_FEATURES            GRES                             STATE      PARTITION
 # brigid[00-15]        64         257757     Opteron,6274,rhel7        (null)                           idle       dpart*
 # vulcan[00-07]        32         257566     Xeon,E5-2683,rhel8        gpu:p6000:8                      mix        dpart*
-# vulcan[08-23]        32         257566     Xeon,E5-2683,rhel8        gpu:gtx1080ti:8                  mix        dpart*
+# vulcan[08-22]        32         257566     Xeon,E5-2683,rhel8        gpu:gtx1080ti:8                  mix        dpart*
+# vulcan23             32         385337     Xeon,4612,rhel8           gpu:rtx2080ti:8                  mix        dpart*
 # vulcan24             32         128519     Zen,7282,rhel8            gpu:rtxa6000:4                   mix        dpart*
 
 # $ show_nodes -p tron #nexus
