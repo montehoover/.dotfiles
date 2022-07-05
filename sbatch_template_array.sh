@@ -6,7 +6,7 @@
 
 # Lines that begin with #SBATCH specify commands to be used by SLURM for scheduling. They are not comments.
 #SBATCH --qos=medium              
-#SBATCH --array=1-5:1                                       # Iterations: <start>-<num steps>:<step size>. 
+#SBATCH --array=1-5:1                                       # Iterations: <start>-<stop>:<step size>. 
                                                             # The "i" number can be accessed with ${SLURM_ARRAY_TASK_ID}.
 
 # Run any commands necessary to setup your environment:
