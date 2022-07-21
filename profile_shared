@@ -11,7 +11,7 @@
 # -------- End Monte's notes -----------
 
 # Update path to include non-standard location of executables:
-export PATH=/usr/local/cuda-11.3/bin${PATH:+:${PATH}}
+export PATH=/usr/local/cuda-11.3/bin:$PATH
 
 # Aliases I want in both bash and zsh:
 # -a: hidden files, 
