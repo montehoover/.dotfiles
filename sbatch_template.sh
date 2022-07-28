@@ -40,7 +40,13 @@ echo $CONDA_DEFAULT_ENV                                     # $CONDA_DEFAULT_ENV
 # #SBATCH --output="slurm-%j.out"       # indicates a file to redirect STDOUT to; %j is the jobid. Must be set to a file instead of a directory or else submission will fail.
 # #SBATCH --error="slurm-%j.out"        # indicates a file to redirect STDERR to; %j is the jobid. Must be set to a file instead of a directory or else submission will fail.
 
-# $ show_qos
+# $ show_assoc #vulcan
+#       User          Account MaxJobs       GrpTRES                                  QOS
+# ---------- ---------------- ------- ------------- ------------------------------------
+#   mhoover4           vulcan      48                       cpu,default,medium,scavenger
+#   mhoover4           ramani      48                  cpu,default,high,medium,scavenger
+
+# $ show_qos #vulcan
 #             Name     MaxWall MaxJobs                        MaxTRES     MaxTRESPU   Priority
 # ---------------- ----------- ------- ------------------------------ ------------- ----------
 #           normal                                                                           0
