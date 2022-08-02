@@ -13,3 +13,7 @@ Host vulcan
 Host cml
     HostName cmlsub00.umiacs.umd.edu
     User mhoover4
+
+Host deepthought
+    HostName login.deepthought2.umd.edu
+    User mhoover4
