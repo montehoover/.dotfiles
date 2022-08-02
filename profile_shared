@@ -43,6 +43,7 @@ alias lsa='ls -AF'   # Show it all, but in condensed ls format
 alias sq='squeue -o "%8u %9q %9a %10R %8j %.10M %.10l %3C %.4m %b"'
 alias sqa='squeue -o "%8u %8i %9P %9q %9a %4Q %7T %R %8j %.10M %.10l %3C %.4m %b"'
 alias sqm='sqa --me'
+alias sqmd='sqa --user=mhoover4' #Required for deepthought
 
 alias si='sacct -o jobid,submit,start,end,state -j'
 
