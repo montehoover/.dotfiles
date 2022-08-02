@@ -29,8 +29,8 @@ echo $CONDA_DEFAULT_ENV                                     # $CONDA_DEFAULT_ENV
 
 # SLURM defaults that you might want to change:
 # #SBATCH --qos=default                 # The qos parameter doesn't actually have a default - you must specify it. See resources available for each qos below.
-# #SBATCH --partition=dpart             # You must add "--partition=scavenger" if you choose "--qos=scavenger"
-# #SBATCH --account=vulcan              # You must add "--account=<faculty name>" if you choose "--qos=high"
+# #SBATCH --partition=dpart             # You must add "--partition=scavenger" if you choose "--qos=scavenger" for all clusters.
+# #SBATCH --account=vulcan              # You must add "--account=<faculty name>" if you choose "--qos=high" when running on Vulcan. You must add "--account=scavenger" if you choose choose "--qos=scavenger" when running on Nexus.
 # #SBATCH --time=0-01:00:00             # Time to reserve for your job. If your job ends before this the resources will be freed. Format=d-hh:mm:ss
 # #SBATCH --mem=8gb                     # For point2mesh runs I needed 32gb in the max cases.
 # #SBATCH --gres=gpu:0                  # Specify how many GPUs and of why type. Ex: gpu:p6000:1, gpu:gtx1080ti:1, gpu:rtx2080ti:1, gpu:rtxa6000:1
