@@ -17,3 +17,7 @@ Host cml
 Host deepthought
     HostName login.deepthought2.umd.edu
     User mhoover4
+
+Host openlab
+    HostName opensub02.umiacs.umd.edu
+    User mhoover4
