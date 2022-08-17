@@ -44,8 +44,8 @@ alias gitpass='git config --global credential.helper store && echo "Ready to sav
 # --me: just my jobs
 alias sq='squeue -o "%8u %9q %9a %10R %8j %.10M %.10l %3C %.4m %b"'
 alias sqa='squeue -o "%8u %8i %9P %9q %9a %4Q %7T %R %8j %.10M %.10l %3C %.4m %b"'
-alias sqm='sqa --me'
-alias sqmd='sqa --user=mhoover4' #Required for deepthought
+#alias sqm='sqa --me'
+alias sqm='sqa --user=mhoover4' #Required for deepthought
 
 alias si='sacct -o jobid,submit,start,end,state -j'
 alias show_qos='sacctmgr show qos format=Name%16,MaxWall,MaxJobsPerUser%7,MaxTRESPerJob%30,MaxTRESPerUser,Priority'
