@@ -43,7 +43,7 @@ alias gitpass='git config --global credential.helper store && echo "Ready to sav
 # b: GPUS Requested
 # --me: just my jobs
 alias sq='squeue -o "%8u %9q %9a %10R %8j %.10M %.10l %3C %.4m %b"'
-alias sqa='squeue -o "%8u %12i %9P %9q %9a %4Q %7T %R %8j %.10M %.10l %3C %.4m %b"'
+alias sqa='squeue -o "%8u %12i %9P %9q %9a %4Q %7T %R %14j %.10M %.10l %3C %.4m %b"'
 #alias sqm='sqa --me'
 alias sqm='sqa --user=mhoover4' #Required for deepthought
 
