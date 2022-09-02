@@ -21,3 +21,7 @@ Host deepthought
 Host openlab
     HostName opensub02.umiacs.umd.edu
     User mhoover4
+
+Host zaratan
+    HostName login.zaratan.umd.edu
+    User mhoover4
