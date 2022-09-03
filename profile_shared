@@ -46,7 +46,7 @@ alias sq='squeue -o "%8u %9q %9a %10R %8j %.10M %.10l %3C %.4m %b"'
 alias sqa='squeue -o "%8u %12i %9P %9q %9a %4Q %7T %R %14j %.10M %.10l %3C %.4m %b"'
 #alias sqm='sqa --me'
 alias sqm='sqa --user=mhoover4' #Required for deepthought
-alias sqw='watch "squeue -o \"%8u %12i %9P %9q %9a %4Q %7T %R %14j %.10M %.10l %3C %.4m %b\" --me"'
+alias sqw='watch "squeue -o \"%8u %12i %9P %9q %9a %4Q %7T %R %14j %.10M %.10l %3C %.4m %b\" --user=mhoover4"'
 
 alias show_job='sacct -o jobname%18,MaxRSS,submit,start,end,state -j'
 alias show_job_all='sacct -o %14 -j'
