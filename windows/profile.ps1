@@ -1,7 +1,7 @@
 echo "Running $profile"
 
 # Choose oh-my-posh theme
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/powerlevel10k_lean.omp.json" | Invoke-Expression
+oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/montehoover.omp.json" | Invoke-Expression
 # oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/pure.omp.json" | Invoke-Expression
 
 Import-Module posh-git
@@ -34,6 +34,9 @@ Set-Alias -Name ll    -Value ls
 Set-Alias -Name open  -Value start
 Set-Alias -Name sudo  -Value gsudo
 Set-Alias -Name less  -Value more
+Set-Alias -Name zip   -Value Compress-Archive
+Set-Alias -Name unzip -Value Expand-Archive
+
 function which {Get-Command -All $args}
 
 # Function so I can "rm -rf" some folder
