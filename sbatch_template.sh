@@ -40,6 +40,13 @@ echo $CONDA_DEFAULT_ENV                                     # $CONDA_DEFAULT_ENV
 # #SBATCH --output="slurm-%j.out"       # indicates a file to redirect STDOUT to; %j is the jobid. Must be set to a file instead of a directory or else submission will fail.
 # #SBATCH --error="slurm-%j.out"        # indicates a file to redirect STDERR to; %j is the jobid. Must be set to a file instead of a directory or else submission will fail.
 
+
+
+#######################
+# How to view resources on a cluster available to you:
+# See profile_shared for definitions of aliases like "show_asoc", "show_qos", and "show_nodes"
+#######################
+
 # $ show_assoc #vulcan
 #       User          Account MaxJobs       GrpTRES                                  QOS
 # ---------- ---------------- ------- ------------- ------------------------------------

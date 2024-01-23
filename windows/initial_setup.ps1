@@ -32,8 +32,8 @@ echo "Installing Firefox..."
 Mozilla.Firefox
 echo "Installing LastPass browser extension"
 winget install LogMeIn.LastPass
-echo "Installing Python and Conda..."
-winget install Anaconda.Miniconda3
+# echo "Installing Python and Conda..."
+# winget install Anaconda.Miniconda3
 # make conda not activate base by default
 # conda config --set auto_activate_base false
 
