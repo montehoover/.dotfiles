@@ -54,3 +54,5 @@ alias show_history='sacct -o jobid,jobname%18,MaxRSS,submit,start,elapsed,state 
 alias show_qos='sacctmgr show qos format=Name%16,MaxWall,MaxJobsPerUser%7,MaxTRESPerJob%30,MaxTRESPerUser,Priority'
 alias show_assoc='sacctmgr show assoc user=$USER format=user%10,account%16,maxjobs,grpTRES,qos%36'
 alias show_nodes='sinfo -N -o "%20N %10c %10m %25f %32G %10t %P"' #helps to use with -p <partition name>
+
+alias userhost='echo ${USER}@${HOST}'
