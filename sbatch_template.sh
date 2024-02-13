@@ -86,3 +86,29 @@ echo $CONDA_DEFAULT_ENV                                     # $CONDA_DEFAULT_ENV
 # NODELIST             CPUS       MEMORY     AVAIL_FEATURES            GRES                             STATE      PARTITION
 # cml[00-16]           32         353837     Xeon,4216                 gpu:rtx2080ti:8                  alloc      dpart*
 # cml[17-24]           32         257545     Zen,EPYC-7282             gpu:rtxa4000:8                   mix        dpart*
+
+# $ ps aux | grep $(whoami)
+# root     1673092  0.0  0.0 159032  9868 ?        Ss   12:51   0:00 sshd: mhoover4 [priv]
+# mhoover4 1673150  0.0  0.0  89700  9784 ?        Ss   12:51   0:00 /usr/lib/systemd/systemd --user
+# mhoover4 1673152  0.0  0.0 334304  8672 ?        S    12:51   0:00 (sd-pam)
+# mhoover4 1673164  0.0  0.0 159032  5228 ?        S    12:51   0:00 sshd: mhoover4@pts/12
+# mhoover4 1673165  0.4  0.0  87576 10064 pts/12   Ss   12:51   0:01 -zsh
+# mhoover4 1673215  0.0  0.0  60892  3872 pts/12   S    12:51   0:00 -zsh
+
+# $ df -h | grep $(whoami)
+# data.isilon.umiacs.umd.edu:/ifs/umiacs/homes/mhoover4             30G   14G   17G  47% /nfshomes/mhoover4
+# 192.168.43.134:/cfar/vulcan/scratch/mhoover4                     300G  144G  157G  48% /vulcanscratch/mhoover4
+
+# $ du -h --max-depth=1 | sort -hr
+# 20G     .
+# 7.5G    ./.cache
+# 4.9G    ./miniconda3
+# 4.2G    ./.local
+# 1.2G    ./.vscode-server
+# 773M    ./tensorflow_datasets
+# 324M    ./.nv
+# 259M    ./.dotfiles
+# 12M     ./.tmux
+# 4.8M    ./.matlab
+# 1.4M    ./.java
+# 248K    ./.ssh
