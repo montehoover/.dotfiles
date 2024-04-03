@@ -1,6 +1,6 @@
-Host class
-    HostName class.umiacs.umd.edu
-    User c828l026
+Host frontier
+    Hostname frontier.olcf.ornl.gov
+    User monte
 
 Host nexus
     HostName nexuscfar01.umiacs.umd.edu
@@ -25,3 +25,7 @@ Host openlab
 Host zaratan
     HostName login.zaratan.umd.edu
     User mhoover4
+
+Host class
+    HostName class.umiacs.umd.edu
+    User c828l026
