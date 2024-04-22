@@ -126,7 +126,7 @@ source ~/.profile_shared
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# ----- Things added by installer scripts ------ #
+# ----- Monte note: things added by installer scripts ------ #
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

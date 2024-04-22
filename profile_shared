@@ -11,6 +11,7 @@
 # -------- End Monte's notes -----------
 
 # Update path to include non-standard location of executables:
+# Nexus cluster - probably not needed any more (as of Apr 2024)
 export PATH=/usr/local/cuda-11.3/bin:$PATH
 
 # Aliases I want in both bash and zsh:
@@ -56,3 +57,27 @@ alias show_assoc='sacctmgr show assoc user=$USER format=user%10,account%16,maxjo
 alias show_nodes='sinfo -N -o "%20N %10c %10m %25f %32G %10t %P"' #helps to use with -p <partition name>
 
 alias userhost='echo ${USER}@${HOST}'
+
+# ----- Monte note: things added by installer scripts ------ #
+
+# homebrew on Macbook
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/Caskroom/miniforge/base/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/Caskroom/miniforge/base/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
+if [ -f "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/mamba.sh" ]; then
+    . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/mamba.sh"
+fi
+# <<< conda initialize <<<
