@@ -18,6 +18,7 @@ git submodule update --init --recursive "${DOTBOT_DIR}"
 # Added by Monte Apr 2024
 if [[ "$(uname)" == "Darwin" ]]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
     bash install_fonts.sh
     brew install miniforge
 fi
