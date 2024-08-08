@@ -3,15 +3,15 @@ Host frontier
     User monte
 
 Host nexus
-    HostName nexuscfar01.umiacs.umd.edu
+    HostName nexuscfar.umiacs.umd.edu
     User mhoover4
 
 Host vulcan
-    HostName vulcansub00.umiacs.umd.edu
+    HostName nexusvulcan.umiacs.umd.edu
     User mhoover4
 
 Host cml
-    HostName cmlsub00.umiacs.umd.edu
+    HostName nexuscml.umiacs.umd.edu
     User mhoover4
 
 Host deepthought
