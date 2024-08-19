@@ -58,6 +58,14 @@ alias show_nodes='sinfo -N -o "%20N %10c %10m %25f %32G %10t %P"' #helps to use 
 
 alias userhost='echo ${USER}@${HOST}'
 
+# A faster version of rm -rf
+rm_rf() {
+    local target_dir="$1"
+    local temp_dir=$(mktemp -d)
+    rsync -a --delete "$temp_dir/" "$target_dir/"
+    rmdir "$temp_dir"
+    rmdir "$target_dir"
+}
 
 #  Nexus-specific stuff:
 if [[ "$(hostname)" == *"umiacs.umd.edu" ]]; then
@@ -96,4 +104,4 @@ if [[ "$(uname)" == "Darwin" ]]; then
         . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/mamba.sh"
     fi
     # <<< conda initialize <<<
-if
+fi
