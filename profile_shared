@@ -11,6 +11,7 @@
 # -------- End Monte's notes -----------
 
 # Update path to include non-standard location of executables:
+# Nexus cluster - probably not needed any more (as of Apr 2024)
 export PATH=/usr/local/cuda-11.3/bin:$PATH
 
 # Aliases I want in both bash and zsh:
@@ -58,14 +59,41 @@ alias show_nodes='sinfo -N -o "%20N %10c %10m %25f %32G %10t %P"' #helps to use 
 alias userhost='echo ${USER}@${HOST}'
 
 
-# Stuff only required for UMD Nexus cluster:
+#  Nexus-specific stuff:
+if [[ "$(hostname)" == *"umiacs.umd.edu" ]]; then
+    # CML tools from Jonas in Tom's lab:
+    source ~/cml-tools/.cmltools
 
-# CML tools from Jonas in Tom's lab:
-source ~/cml-tools/.cmltools
+    # Change the default location of the user .cache directory since I'm running out of space
+    export XDG_CACHE_HOME=/fs/nexus-scratch/mhoover4/.cache
 
-# Change the default location of the user .cache directory since I'm running out of space
-export XDG_CACHE_HOME=/fs/nexus-scratch/mhoover4/.cache
+    # For the Faiss Top-k project
+    module load gcc
+fi
 
-# For the Faiss Top-k project
-module load gcc
+# MacOS-specific stuff:
+if [[ "$(uname)" == "Darwin" ]]; then
+    # ----- Monte note: things added by installer scripts ------ #
 
+    # homebrew on Macbook
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    # >>> conda initialize >>>
+    # !! Contents within this block are managed by 'conda init' !!
+    __conda_setup="$('/opt/homebrew/Caskroom/miniforge/base/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if [ -f "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh" ]; then
+            . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh"
+        else
+            export PATH="/opt/homebrew/Caskroom/miniforge/base/bin:$PATH"
+        fi
+    fi
+    unset __conda_setup
+
+    if [ -f "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/mamba.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/mamba.sh"
+    fi
+    # <<< conda initialize <<<
+if
