@@ -67,6 +67,11 @@ rm_rf() {
     rmdir "$target_dir"
 }
 
+# A faster version of cp
+rcp() {
+    rsync -avh --progress --partial --append "$@"
+}
+
 #  Nexus-specific stuff:
 if [[ "$(hostname)" == *"umiacs.umd.edu" ]]; then
     # CML tools from Jonas in Tom's lab:
