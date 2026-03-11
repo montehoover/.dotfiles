@@ -1,8 +1,16 @@
+# Do not load any themes or plugins when Cursor Agent runs
+# If running under Cursor Agent, set a flag to disable themes/plugins below
+if [[ -n "$CURSOR_AGENT" ]]; then
+  export OMZ_DISABLE=1
+fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
+if [[ -z "$OMZ_DISABLE" ]]; then
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 fi
 
 # If you come from bash you might have to change your $PATH.
@@ -90,7 +98,9 @@ plugins=(
     zsh-syntax-highlighting
     )
 
+if [[ -z "$OMZ_DISABLE" ]]; then
 source $ZSH/oh-my-zsh.sh
+fi
 
 # User configuration
 
@@ -129,4 +139,6 @@ source ~/.profile_shared
 # ----- Monte note: things added by installer scripts ------ #
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+if [[ -z "$OMZ_DISABLE" ]]; then
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+fi
