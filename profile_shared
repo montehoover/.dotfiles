@@ -80,8 +80,20 @@ if [[ "$(hostname)" == *"umiacs.umd.edu" ]]; then
     # Change the default location of the user .cache directory since I'm running out of space
     export XDG_CACHE_HOME=/fs/nexus-scratch/mhoover4/.cache
 
-    # For the Faiss Top-k project
-    module load gcc
+    # >>> conda initialize >>>
+    # !! Contents within this block are managed by 'conda init' !!
+    __conda_setup="$('/vulcanscratch/mhoover4/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if [ -f "/vulcanscratch/mhoover4/miniconda3/etc/profile.d/conda.sh" ]; then
+            . "/vulcanscratch/mhoover4/miniconda3/etc/profile.d/conda.sh"
+        else
+            export PATH="/vulcanscratch/mhoover4/miniconda3/bin:$PATH"
+        fi
+    fi
+    unset __conda_setup
+    # <<< conda initialize <<<
 fi
 
 # MacOS-specific stuff:

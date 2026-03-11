@@ -8,9 +8,9 @@ fi
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -z "$OMZ_DISABLE" ]]; then
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+  if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+  fi
 fi
 
 # If you come from bash you might have to change your $PATH.
@@ -142,3 +142,6 @@ source ~/.profile_shared
 if [[ -z "$OMZ_DISABLE" ]]; then
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 fi
+
+export PATH="${HOME}/.local/bin:$PATH"
+eval "$(uv generate-shell-completion zsh)"
