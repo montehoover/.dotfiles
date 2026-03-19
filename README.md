@@ -6,6 +6,7 @@ To run this on a new machine, clone and install in your home directory:
 ```
 cd ~
 git clone https://github.com/montehoover/.dotfiles.git
+cd .dotfiles
 bash ./install
 ```
 The install script is from [dotbot](https://github.com/anishathalye/dotbot), which is a submodule of this repo.
