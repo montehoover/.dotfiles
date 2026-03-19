@@ -2,10 +2,12 @@
 
 This repo was initially created using the "init-dotfiles" script: https://github.com/Vaelatern/init-dotfiles
 
-To run this on a new machine:
-1. git clone https://github.com/montehoover/.dotfiles.git
-2. bash ./install
-
+To run this on a new machine, clone and install in your home directory:
+```
+cd ~
+git clone https://github.com/montehoover/.dotfiles.git
+bash ./install
+```
 The install script is from [dotbot](https://github.com/anishathalye/dotbot), which is a submodule of this repo.
 
 I'm using zsh with [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) as a plugin/template manager. I'm using a pretty limited set of plugins (see line 82 of [.zshrc](./zshrc)) including [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting). I like [powerlevel10k](https://github.com/romkatv/powerlevel10k) for a nice minimal theme. If I were to do this again I would use [antigen](https://github.com/zsh-users/antigen) instead of oh-my-zsh, but it is working fine now so I'm not going to mess with it. 
