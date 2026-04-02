@@ -15,10 +15,7 @@ git submodule update --init --recursive "${DOTBOT_DIR}"
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
 
 
-# Added by Monte Apr 2024
+# Platform-specific setup
 if [[ "$(uname)" == "Darwin" ]]; then
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-    bash install_fonts.sh
-    brew install miniforge
+    bash "${BASEDIR}/setup_mac.sh"
 fi
