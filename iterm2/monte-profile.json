@@ -1,0 +1,133 @@
+{
+  "Profiles": [
+    {
+      "Guid": "0A9CA7D1-1134-4C14-B123-9BE6BCB0F92E",
+      "Name": "Monte",
+      "Ansi 0 Color": {
+        "Blue Component": 0,
+        "Green Component": 0,
+        "Red Component": 0
+      },
+      "Ansi 1 Color": {
+        "Blue Component": 0,
+        "Green Component": 0,
+        "Red Component": 0.733333
+      },
+      "Ansi 10 Color": {
+        "Blue Component": 0.333333,
+        "Green Component": 1,
+        "Red Component": 0.333333
+      },
+      "Ansi 11 Color": {
+        "Blue Component": 0.333333,
+        "Green Component": 1,
+        "Red Component": 1
+      },
+      "Ansi 12 Color": {
+        "Blue Component": 1,
+        "Green Component": 0.333333,
+        "Red Component": 0.333333
+      },
+      "Ansi 13 Color": {
+        "Blue Component": 1,
+        "Green Component": 0.333333,
+        "Red Component": 1
+      },
+      "Ansi 14 Color": {
+        "Blue Component": 1,
+        "Green Component": 1,
+        "Red Component": 0.333333
+      },
+      "Ansi 15 Color": {
+        "Blue Component": 1,
+        "Green Component": 1,
+        "Red Component": 1
+      },
+      "Ansi 2 Color": {
+        "Blue Component": 0,
+        "Green Component": 0.733333,
+        "Red Component": 0
+      },
+      "Ansi 3 Color": {
+        "Blue Component": 0,
+        "Green Component": 0.733333,
+        "Red Component": 0.733333
+      },
+      "Ansi 4 Color": {
+        "Blue Component": 0.733333,
+        "Green Component": 0,
+        "Red Component": 0
+      },
+      "Ansi 5 Color": {
+        "Blue Component": 0.733333,
+        "Green Component": 0,
+        "Red Component": 0.733333
+      },
+      "Ansi 6 Color": {
+        "Blue Component": 0.733333,
+        "Green Component": 0.733333,
+        "Red Component": 0
+      },
+      "Ansi 7 Color": {
+        "Blue Component": 0.733333,
+        "Green Component": 0.733333,
+        "Red Component": 0.733333
+      },
+      "Ansi 8 Color": {
+        "Blue Component": 0.333333,
+        "Green Component": 0.333333,
+        "Red Component": 0.333333
+      },
+      "Ansi 9 Color": {
+        "Blue Component": 0.333333,
+        "Green Component": 0.333333,
+        "Red Component": 1
+      },
+      "Background Color": {
+        "Blue Component": 0,
+        "Green Component": 0,
+        "Red Component": 0
+      },
+      "Bold Color": {
+        "Blue Component": 1,
+        "Green Component": 1,
+        "Red Component": 1
+      },
+      "Cursor Color": {
+        "Blue Component": 0.733333,
+        "Green Component": 0.733333,
+        "Red Component": 0.733333
+      },
+      "Cursor Text Color": {
+        "Blue Component": 1,
+        "Green Component": 1,
+        "Red Component": 1
+      },
+      "Foreground Color": {
+        "Blue Component": 0.733333,
+        "Green Component": 0.733333,
+        "Red Component": 0.733333
+      },
+      "Selected Text Color": {
+        "Blue Component": 0,
+        "Green Component": 0,
+        "Red Component": 0
+      },
+      "Selection Color": {
+        "Blue Component": 1,
+        "Green Component": 0.8353,
+        "Red Component": 0.7098
+      },
+      "Normal Font": "MesloLGMNFM-Regular 14",
+      "Non Ascii Font": "Monaco 12",
+      "Use Non-ASCII Font": false,
+      "ASCII Anti Aliased": true,
+      "Non-ASCII Anti Aliased": true,
+      "Columns": 120,
+      "Rows": 75,
+      "Scrollback Lines": 10000,
+      "Silence Bell": true,
+      "Visual Bell": true
+    }
+  ]
+}
