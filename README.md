@@ -16,3 +16,45 @@ I almost never use tmux, but [tpm](https://github.com/tmux-plugins/tpm) works we
 I have a few aliases that I like in [.profile_shared](./profile_shared).
 
 This repo also helps me sync the small basics like .gitconfig and .ssh configs. I also use this repo to carry around slurm/sbatch templates which I find handy.
+
+## What Gets Installed (macOS)
+
+**Via Homebrew (Brewfile):**
+- git
+- gh (GitHub CLI)
+- mas (Mac App Store CLI)
+- iTerm2
+- Firefox
+- Google Chrome
+- Rectangle
+- Shottr
+- AltTab
+- Cursor
+- Claude
+
+**Via Mac App Store (setup_mac.sh):**
+- Microsoft Word, Excel, PowerPoint, OneNote, Outlook
+- Microsoft OneDrive
+- Slack
+
+**Dev tools (setup_mac.sh):**
+- Claude Code
+- Miniforge (conda)
+
+**Browser extensions (staged for install on next launch):**
+- LastPass (Chrome + Firefox)
+- Adblock Plus (Chrome + Firefox)
+
+**Shell/terminal (via submodules and config):**
+- Oh My Zsh
+- zsh-autosuggestions
+- zsh-syntax-highlighting
+- Powerlevel10k theme
+- Nerd Fonts (7 families)
+- tpm (tmux plugin manager)
+- tmux-sensible plugin
+- Dracula tmux theme
+
+**Also configured:**
+- SSH key generation + GitHub auth
+- macOS preferences (Dock autohide, Finder show hidden files/path bar/list view/extensions, tap-to-click, hot corner, iCloud screenshots)
