@@ -10,6 +10,9 @@
 # echo "Running ~/.profile_shared..."
 # -------- End Monte's notes -----------
 
+# Source secrets (API keys, tokens, etc.) from a non-tracked file
+[[ -f ~/.secrets ]] && source ~/.secrets
+
 # Update path to include non-standard location of executables:
 # Nexus cluster - probably not needed any more (as of Apr 2024)
 export PATH=/usr/local/cuda-11.3/bin:$PATH

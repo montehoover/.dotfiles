@@ -199,18 +199,12 @@ SUCCEEDED+=("Nerd Fonts")
 # =============================================================================
 print_header "Phase 5: Mac App Store Apps"
 
-declare -A MAS_APPS=(
-    [462054704]="Microsoft Word"
-    [462058435]="Microsoft Excel"
-    [462062816]="Microsoft PowerPoint"
-    [784801555]="Microsoft OneNote"
-    [462060435]="Microsoft Outlook"
-    [823766827]="OneDrive"
-    [803453959]="Slack"
-)
+MAS_IDS=(462054704 462058435 462062816 784801555 462060435 823766827 803453959)
+MAS_NAMES=("Microsoft Word" "Microsoft Excel" "Microsoft PowerPoint" "Microsoft OneNote" "Microsoft Outlook" "OneDrive" "Slack")
 
-for app_id in "${!MAS_APPS[@]}"; do
-    app_name="${MAS_APPS[$app_id]}"
+for i in "${!MAS_IDS[@]}"; do
+    app_id="${MAS_IDS[$i]}"
+    app_name="${MAS_NAMES[$i]}"
     if mas list | grep -q "^${app_id}"; then
         echo "  ✓ $app_name (already installed)"
         SUCCEEDED+=("$app_name")

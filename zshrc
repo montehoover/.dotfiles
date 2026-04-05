@@ -144,4 +144,4 @@ if [[ -z "$OMZ_DISABLE" ]]; then
 fi
 
 export PATH="${HOME}/.local/bin:$PATH"
-eval "$(uv generate-shell-completion zsh)"
+command -v uv &>/dev/null && eval "$(uv generate-shell-completion zsh)"
