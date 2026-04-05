@@ -102,9 +102,9 @@ has_trackpad() {
 ARCH=$(uname -m)  # arm64 or x86_64
 
 # =============================================================================
-# Phase 1: Xcode CLI Tools
+# Step 1: Xcode CLI Tools
 # =============================================================================
-print_header "Phase 1: Xcode CLI Tools"
+print_header "Step 1: Xcode CLI Tools"
 
 if xcode-select -p &>/dev/null; then
     echo "  ✓ Xcode CLI Tools (already installed)"
@@ -129,9 +129,9 @@ else
 fi
 
 # =============================================================================
-# Phase 2: Homebrew
+# Step 2: Homebrew
 # =============================================================================
-print_header "Phase 2: Homebrew"
+print_header "Step 2: Homebrew"
 
 if command -v brew &>/dev/null; then
     echo "  ✓ Homebrew (already installed)"
@@ -158,9 +158,9 @@ else
 fi
 
 # =============================================================================
-# Phase 3: Brew Bundle (CLI tools + cask apps)
+# Step 3: Brew Bundle (CLI tools + cask apps)
 # =============================================================================
-print_header "Phase 3: Homebrew Packages"
+print_header "Step 3: Homebrew Packages"
 
 echo "  Running brew bundle..."
 brew bundle --file="$SCRIPT_DIR/Brewfile" || true
@@ -185,9 +185,9 @@ for cask in claude iterm2 firefox google-chrome rectangle shottr alt-tab cursor;
 done
 
 # =============================================================================
-# Phase 4: Nerd Fonts
+# Step 4: Nerd Fonts
 # =============================================================================
-print_header "Phase 4: Nerd Fonts"
+print_header "Step 4: Nerd Fonts"
 
 echo "  Installing Nerd Fonts..."
 bash "$SCRIPT_DIR/install_fonts.sh"
@@ -195,9 +195,9 @@ echo "  ✓ Nerd Fonts"
 SUCCEEDED+=("Nerd Fonts")
 
 # =============================================================================
-# Phase 5: Mac App Store Apps
+# Step 5: Mac App Store Apps
 # =============================================================================
-print_header "Phase 5: Mac App Store Apps"
+print_header "Step 5: Mac App Store Apps"
 
 MAS_IDS=(462054704 462058435 462062816 784801555 462060435 823766827 803453959)
 MAS_NAMES=("Microsoft Word" "Microsoft Excel" "Microsoft PowerPoint" "Microsoft OneNote" "Microsoft Outlook" "OneDrive" "Slack")
@@ -205,21 +205,25 @@ MAS_NAMES=("Microsoft Word" "Microsoft Excel" "Microsoft PowerPoint" "Microsoft 
 for i in "${!MAS_IDS[@]}"; do
     app_id="${MAS_IDS[$i]}"
     app_name="${MAS_NAMES[$i]}"
-    if mas list | grep -q "^${app_id}"; then
+    if [ -d "/Applications/${app_name}.app" ] || mas list | grep -q "^ *${app_id} "; then
         echo "  ✓ $app_name (already installed)"
         SUCCEEDED+=("$app_name")
     else
-        try_or_assist "$app_name" \
-            "open -a \"App Store\"" \
-            "The App Store has been opened. Sign in if needed, then press Enter to retry." \
-            mas install "$app_id"
+        echo "  Installing $app_name..."
+        if mas install "$app_id"; then
+            echo "  ✓ $app_name"
+            SUCCEEDED+=("$app_name")
+        else
+            echo "  ✗ $app_name failed — skipping."
+            FAILED+=("$app_name")
+        fi
     fi
 done
 
 # =============================================================================
-# Phase 6: Claude Code & Miniforge
+# Step 6: Claude Code & Miniforge
 # =============================================================================
-print_header "Phase 6: Dev Tools (Claude Code & Miniforge)"
+print_header "Step 6: Dev Tools (Claude Code & Miniforge)"
 
 # Claude Code
 if command -v claude &>/dev/null; then
@@ -251,9 +255,9 @@ else
 fi
 
 # =============================================================================
-# Phase 7: SSH Key & GitHub Auth
+# Step 7: SSH Key & GitHub Auth
 # =============================================================================
-print_header "Phase 7: SSH Key & GitHub Auth"
+print_header "Step 7: SSH Key & GitHub Auth"
 
 # SSH key
 if [ -f "$HOME/.ssh/id_ed25519" ]; then
@@ -299,36 +303,54 @@ if gh auth status &>/dev/null; then
 fi
 
 # =============================================================================
-# Phase 8: macOS Preferences
+# Step 8: macOS Preferences
 # =============================================================================
-print_header "Phase 8: macOS Preferences"
+print_header "Step 8: macOS Preferences"
 
-# Dock
-echo "  Configuring Dock..."
-defaults write com.apple.dock autohide -bool true
-defaults write com.apple.dock tilesize -int 64
-defaults write com.apple.dock show-recents -bool false
-defaults write com.apple.dock wvous-br-corner -int 14    # bottom-right = Quick Note
-defaults write com.apple.dock wvous-br-modifier -int 0
-killall Dock 2>/dev/null || true
-echo "  ✓ Dock (autohide, size 64, no recents, hot corner)"
+# Dock — skip if already configured (avoids restarting Dock on re-runs)
+if [[ "$(defaults read com.apple.dock autohide 2>/dev/null)" != "1" ]] \
+|| [[ "$(defaults read com.apple.dock tilesize 2>/dev/null)" != "64" ]] \
+|| [[ "$(defaults read com.apple.dock show-recents 2>/dev/null)" != "0" ]] \
+|| [[ "$(defaults read com.apple.dock wvous-br-corner 2>/dev/null)" != "14" ]]; then
+    echo "  Configuring Dock..."
+    defaults write com.apple.dock autohide -bool true
+    defaults write com.apple.dock tilesize -int 64
+    defaults write com.apple.dock show-recents -bool false
+    defaults write com.apple.dock wvous-br-corner -int 14    # bottom-right = Quick Note
+    defaults write com.apple.dock wvous-br-modifier -int 0
+    killall Dock 2>/dev/null || true
+    echo "  ✓ Dock (autohide, size 64, no recents, hot corner)"
+else
+    echo "  ✓ Dock preferences (already configured)"
+fi
 SUCCEEDED+=("Dock preferences")
 
-# Finder
-echo "  Configuring Finder..."
-defaults write com.apple.finder AppleShowAllFiles -bool true
-defaults write com.apple.finder ShowPathbar -bool true
-defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
-defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-killall Finder 2>/dev/null || true
-echo "  ✓ Finder (hidden files, path bar, list view, extensions)"
+# Finder — skip if already configured (avoids restarting Finder on re-runs)
+if [[ "$(defaults read com.apple.finder AppleShowAllFiles 2>/dev/null)" != "1" ]] \
+|| [[ "$(defaults read com.apple.finder ShowPathbar 2>/dev/null)" != "1" ]] \
+|| [[ "$(defaults read com.apple.finder FXPreferredViewStyle 2>/dev/null)" != "Nlsv" ]] \
+|| [[ "$(defaults read NSGlobalDomain AppleShowAllExtensions 2>/dev/null)" != "1" ]]; then
+    echo "  Configuring Finder..."
+    defaults write com.apple.finder AppleShowAllFiles -bool true
+    defaults write com.apple.finder ShowPathbar -bool true
+    defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+    defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+    killall Finder 2>/dev/null || true
+    echo "  ✓ Finder (hidden files, path bar, list view, extensions)"
+else
+    echo "  ✓ Finder preferences (already configured)"
+fi
 SUCCEEDED+=("Finder preferences")
 
-# Trackpad
+# Trackpad — skip if already configured
 if has_trackpad; then
-    echo "  Configuring Trackpad..."
-    defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
-    echo "  ✓ Trackpad (tap to click)"
+    if [[ "$(defaults read com.apple.AppleMultitouchTrackpad Clicking 2>/dev/null)" != "1" ]]; then
+        echo "  Configuring Trackpad..."
+        defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+        echo "  ✓ Trackpad (tap to click)"
+    else
+        echo "  ✓ Trackpad preferences (already configured)"
+    fi
     SUCCEEDED+=("Trackpad preferences")
 else
     echo "  - No trackpad detected — skipping tap-to-click."
@@ -351,9 +373,9 @@ else
 fi
 
 # =============================================================================
-# Phase 9: Browser Extensions
+# Step 9: Browser Extensions
 # =============================================================================
-print_header "Phase 9: Browser Extensions"
+print_header "Step 9: Browser Extensions"
 
 # Chrome: External Extensions JSON (silent install on next Chrome launch)
 CHROME_EXT_DIR="$HOME/Library/Application Support/Google/Chrome/External Extensions"
