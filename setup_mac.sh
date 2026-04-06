@@ -199,7 +199,7 @@ SUCCEEDED+=("Nerd Fonts")
 # =============================================================================
 print_header "Step 5: Mac App Store Apps"
 
-MAS_IDS=(462054704 462058435 462062816 784801555 462060435 823766827 803453959)
+MAS_IDS=(462054704 462058435 462062816 784801555 985367838 823766827 803453959)
 MAS_NAMES=("Microsoft Word" "Microsoft Excel" "Microsoft PowerPoint" "Microsoft OneNote" "Microsoft Outlook" "OneDrive" "Slack")
 
 for i in "${!MAS_IDS[@]}"; do
@@ -371,6 +371,36 @@ else
         "Apple ID settings opened. Sign in and enable iCloud Drive, then press Enter to retry." \
         bash -c "[ -d \"$ICLOUD_DIR\" ] && mkdir -p \"$ICLOUD_SCREENSHOTS\" && defaults write com.apple.screencapture location \"$ICLOUD_SCREENSHOTS\""
 fi
+
+# iTerm2 — set Dynamic Profile as default
+ITERM_PROFILE_GUID="7812A989-1897-40CB-BE81-10479BF68E9D"
+if [[ "$(defaults read com.googlecode.iterm2 "Default Bookmark Guid" 2>/dev/null)" == "$ITERM_PROFILE_GUID" ]]; then
+    echo "  ✓ iTerm2 default profile (already configured)"
+else
+    if [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
+        # Running inside iTerm2 — it already knows about the dynamic profile
+        defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "$ITERM_PROFILE_GUID"
+        echo "  ✓ iTerm2 default profile set to Monte (restart iTerm2 to apply)"
+    elif [ -d "/Applications/iTerm.app" ]; then
+        # Launch iTerm2 so it discovers the dynamic profile, then quit
+        echo "  Launching iTerm2 briefly to load dynamic profile..."
+        open -a iTerm
+        for i in $(seq 1 30); do
+            osascript -e 'tell application "iTerm2" to count windows' 2>/dev/null && break
+            sleep 0.2
+        done
+        osascript -e 'quit app "iTerm2"'
+        for i in $(seq 1 30); do
+            pgrep -x iTerm2 >/dev/null || break
+            sleep 0.2
+        done
+        defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "$ITERM_PROFILE_GUID"
+        echo "  ✓ iTerm2 default profile set to Monte"
+    else
+        echo "  - iTerm2 not installed — skipping default profile setup."
+    fi
+fi
+SUCCEEDED+=("iTerm2 default profile")
 
 # =============================================================================
 # Step 9: Browser Extensions
