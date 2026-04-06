@@ -2,6 +2,7 @@
 	email = monte.b.hoover@gmail.com
 	name = Monte Hoover
 [credential]
+	helper =
 	helper = store
 [init]
 	defaultBranch = main
