@@ -274,6 +274,14 @@ fi
 eval "$(ssh-agent -s)" &>/dev/null
 ssh-add "$HOME/.ssh/id_ed25519" 2>/dev/null || true
 
+# Add GitHub host key to known_hosts
+if ! grep -q "github.com" ~/.ssh/known_hosts 2>/dev/null; then
+    ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+    echo "  ✓ Added GitHub host key to known_hosts"
+else
+    echo "  ✓ GitHub host key (already in known_hosts)"
+fi
+
 # GitHub auth
 if gh auth status &>/dev/null; then
     echo "  ✓ GitHub CLI (already authenticated)"
