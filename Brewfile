@@ -1,5 +1,6 @@
 # CLI tools
 brew "git"
+brew "git-lfs"
 brew "gh"
 brew "mas"
 

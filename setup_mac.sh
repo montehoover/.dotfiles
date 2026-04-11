@@ -166,7 +166,7 @@ echo "  Running brew bundle..."
 brew bundle --file="$SCRIPT_DIR/Brewfile" || true
 
 # Verify each expected formula/cask and report
-for formula in git gh mas; do
+for formula in git git-lfs gh mas; do
     if brew list --formula | grep -q "^${formula}$"; then
         echo "  ✓ $formula"
         SUCCEEDED+=("$formula")
@@ -174,6 +174,19 @@ for formula in git gh mas; do
         try_or_assist "$formula" "" "" brew install "$formula"
     fi
 done
+
+# git-lfs: install global filter hooks (idempotent — gitconfig already has the
+# filter section, but `git lfs install` is what registers the binary as the
+# handler for new clones and verifies the install).
+if command -v git-lfs &>/dev/null; then
+    git lfs install --skip-repo &>/dev/null && {
+        echo "  ✓ git-lfs hooks installed"
+        SUCCEEDED+=("git-lfs hooks")
+    } || {
+        echo "  ✗ git lfs install failed"
+        FAILED+=("git-lfs hooks")
+    }
+fi
 
 for cask in claude iterm2 firefox google-chrome rectangle shottr alt-tab cursor; do
     if brew list --cask | grep -q "^${cask}$"; then
