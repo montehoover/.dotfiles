@@ -99,6 +99,35 @@ has_trackpad() {
     system_profiler SPUSBDataType SPBluetoothDataType 2>/dev/null | grep -qi trackpad
 }
 
+# Write content (from stdin) to PATH only if it differs from what's already
+# there. Avoids touching mtimes on re-runs, which is what causes Chrome to
+# re-evaluate External Extensions and Firefox to re-trigger managed-mode
+# initialization (which appears to wipe browser cache/sessions).
+#
+# Usage:
+#   write_if_changed PATH         <<EOF ... EOF   # normal write
+#   write_if_changed PATH sudo    <<EOF ... EOF   # sudo write
+#
+# Returns 0 if the file was written (changed), 1 if it was already up-to-date.
+write_if_changed() {
+    local path="$1"
+    local mode="${2:-}"  # "" or "sudo"
+    local tmp
+    tmp=$(mktemp)
+    cat > "$tmp"
+    if [[ -f "$path" ]] && cmp -s "$tmp" "$path"; then
+        rm -f "$tmp"
+        return 1
+    fi
+    if [[ "$mode" == "sudo" ]]; then
+        sudo install -m 644 "$tmp" "$path"
+    else
+        install -m 644 "$tmp" "$path"
+    fi
+    rm -f "$tmp"
+    return 0
+}
+
 ARCH=$(uname -m)  # arm64 or x86_64
 
 # =============================================================================
@@ -427,30 +456,51 @@ SUCCEEDED+=("iTerm2 default profile")
 # =============================================================================
 print_header "Step 9: Browser Extensions"
 
-# Chrome: External Extensions JSON (silent install on next Chrome launch)
+# Chrome: External Extensions JSON (silent install on next Chrome launch).
+# Files are only written when content actually changes — re-running with
+# identical content is a true no-op so Chrome doesn't re-evaluate extensions
+# (which can wipe session/cache state).
 CHROME_EXT_DIR="$HOME/Library/Application Support/Google/Chrome/External Extensions"
-mkdir -p "$CHROME_EXT_DIR"
+CHROME_LASTPASS="$CHROME_EXT_DIR/hdokiejnpimakedhajhdlcegeplioahd.json"
+CHROME_ADBLOCK="$CHROME_EXT_DIR/cfhdojbkjhnklbpkdaibdccddilifddb.json"
+chrome_changed=0
 
-cat > "$CHROME_EXT_DIR/hdokiejnpimakedhajhdlcegeplioahd.json" << 'EOF'
+if [[ ! -f "$CHROME_LASTPASS" ]] || [[ ! -f "$CHROME_ADBLOCK" ]]; then
+    mkdir -p "$CHROME_EXT_DIR"
+fi
+
+if write_if_changed "$CHROME_LASTPASS" <<'EOF'
 {
   "external_update_url": "https://clients2.google.com/service/update2/crx"
 }
 EOF
+then chrome_changed=1; fi
 
-cat > "$CHROME_EXT_DIR/cfhdojbkjhnklbpkdaibdccddilifddb.json" << 'EOF'
+if write_if_changed "$CHROME_ADBLOCK" <<'EOF'
 {
   "external_update_url": "https://clients2.google.com/service/update2/crx"
 }
 EOF
+then chrome_changed=1; fi
 
-echo "  ✓ Chrome extensions staged (LastPass + Adblock Plus — installed on next Chrome launch)"
+if [[ "$chrome_changed" == "1" ]]; then
+    echo "  ✓ Chrome extensions staged (LastPass + Adblock Plus — installed on next Chrome launch)"
+else
+    echo "  ✓ Chrome extensions (already staged, no changes)"
+fi
 SUCCEEDED+=("Chrome extensions")
 
-# Firefox: policies.json (installs extensions on next Firefox launch)
+# Firefox: policies.json (installs extensions on next Firefox launch).
+# Lives inside the Firefox.app bundle, so a Firefox auto-update will erase it —
+# re-run install.sh after an update to put it back. Only re-written when
+# content changes, to avoid Firefox re-triggering managed-mode init.
 FIREFOX_DIST="/Applications/Firefox.app/Contents/Resources/distribution"
+FIREFOX_POLICIES="$FIREFOX_DIST/policies.json"
 if [ -d "/Applications/Firefox.app" ]; then
-    sudo mkdir -p "$FIREFOX_DIST"
-    sudo tee "$FIREFOX_DIST/policies.json" > /dev/null << 'EOF'
+    if [[ ! -d "$FIREFOX_DIST" ]]; then
+        sudo mkdir -p "$FIREFOX_DIST"
+    fi
+    if write_if_changed "$FIREFOX_POLICIES" sudo <<'EOF'
 {
   "policies": {
     "Extensions": {
@@ -462,7 +512,11 @@ if [ -d "/Applications/Firefox.app" ]; then
   }
 }
 EOF
-    echo "  ✓ Firefox extensions staged (LastPass + Adblock Plus — installed on next Firefox launch)"
+    then
+        echo "  ✓ Firefox extensions staged (LastPass + Adblock Plus — installed on next Firefox launch)"
+    else
+        echo "  ✓ Firefox extensions (already staged, no changes)"
+    fi
     SUCCEEDED+=("Firefox extensions")
 else
     echo "  - Firefox not found in /Applications — skipping extension setup."
