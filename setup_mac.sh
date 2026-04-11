@@ -452,9 +452,9 @@ fi
 SUCCEEDED+=("iTerm2 default profile")
 
 # =============================================================================
-# Step 9: Browser Extensions
+# Step 9: Browser Configuration (Extensions + Policies)
 # =============================================================================
-print_header "Step 9: Browser Extensions"
+print_header "Step 9: Browser Configuration"
 
 # Chrome: External Extensions JSON (silent install on next Chrome launch).
 # Files are only written when content actually changes — re-running with
@@ -508,19 +508,24 @@ if [ -d "/Applications/Firefox.app" ]; then
         "https://addons.mozilla.org/firefox/downloads/latest/adblock-plus/latest.xpi",
         "https://addons.mozilla.org/firefox/downloads/latest/lastpass-password-manager/latest.xpi"
       ]
-    }
+    },
+    "SearchEngines": {
+      "Default": "DuckDuckGo"
+    },
+    "OfferToSaveLogins": false,
+    "PasswordManagerEnabled": false
   }
 }
 EOF
     then
-        echo "  ✓ Firefox extensions staged (LastPass + Adblock Plus — installed on next Firefox launch)"
+        echo "  ✓ Firefox policies staged (extensions, DuckDuckGo search, no password saving)"
     else
-        echo "  ✓ Firefox extensions (already staged, no changes)"
+        echo "  ✓ Firefox policies (already staged, no changes)"
     fi
-    SUCCEEDED+=("Firefox extensions")
+    SUCCEEDED+=("Firefox policies")
 else
-    echo "  - Firefox not found in /Applications — skipping extension setup."
-    SKIPPED+=("Firefox extensions")
+    echo "  - Firefox not found in /Applications — skipping Firefox configuration."
+    SKIPPED+=("Firefox policies")
 fi
 
 # =============================================================================
@@ -547,7 +552,7 @@ fi
 echo ""
 echo "  MANUAL STEPS REMAINING:"
 echo "    [ ] Launch Chrome and Firefox once to trigger extension installation"
-echo "    [ ] System Settings -> Internet Accounts -> Add email/calendar accounts"
+echo "    [ ] System Settings → Internet Accounts → Add email/calendar accounts"
 echo "    [ ] Sign in to: Slack, OneDrive, Claude, Cursor"
 echo "    [ ] Grant permissions when prompted: Rectangle, Shottr, AltTab"
 
@@ -556,7 +561,7 @@ echo ""
 echo "  VERIFY WITH:"
 echo "    ssh -T git@github.com"
 echo "    conda info"
-echo "    brew list && brew list --cask"
+echo "    brew list"
 echo "    mas list"
 
 print_exit_message
