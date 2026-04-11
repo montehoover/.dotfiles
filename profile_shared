@@ -30,6 +30,13 @@ alias lsa='ls -AF'   # Show it all, but in condensed ls format
 
 alias gitpass='git config --global credential.helper store && echo "Ready to save git credentials."'
 
+# Claude Code: --channels requires per-session opt-in for the Discord channel plugin.
+# claude_c  = normal permission prompts
+# claude_cd = permission prompts still on by default, but the bypassPermissions mode
+#             is *available* to switch into mid-session if needed.
+alias claude_c='claude --channels plugin:discord@claude-plugins-official'
+alias claude_cd='claude --channels plugin:discord@claude-plugins-official --allow-dangerously-skip-permissions'
+
 # Show Slurm jobs on a cluster. Number indicates spaces for the column info. "." is for right justified.
 # u: USER 
 # i: JOBID 
