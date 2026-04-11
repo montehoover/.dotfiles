@@ -352,9 +352,56 @@ if gh auth status &>/dev/null; then
 fi
 
 # =============================================================================
-# Step 8: macOS Preferences
+# Step 8: ai-sync (syncs ~/.claude config across machines)
 # =============================================================================
-print_header "Step 8: macOS Preferences"
+print_header "Step 8: ai-sync"
+
+# The installer may symlink into ~/.local/bin when /usr/local/bin isn't writable
+# and stdin isn't a tty (which is the case when piping curl | bash). Make sure
+# that location is on PATH for the rest of this script.
+export PATH="$HOME/.local/bin:$PATH"
+
+if command -v ai-sync &>/dev/null; then
+    echo "  ✓ ai-sync (already installed)"
+    SUCCEEDED+=("ai-sync install")
+else
+    echo "  Installing ai-sync..."
+    if curl -fsSL https://raw.githubusercontent.com/berlinguyinca/ai-sync/main/install.sh | bash; then
+        hash -r 2>/dev/null || true
+        if command -v ai-sync &>/dev/null; then
+            echo "  ✓ ai-sync installed"
+            SUCCEEDED+=("ai-sync install")
+        else
+            echo "  ✗ ai-sync installed but not found on PATH"
+            FAILED+=("ai-sync install")
+        fi
+    else
+        echo "  ✗ ai-sync install failed"
+        FAILED+=("ai-sync install")
+    fi
+fi
+
+# Bootstrap the sync repo — clones montehoover/ai-config and applies it to
+# ~/.claude. Idempotent: the ai-sync CLI refuses to re-bootstrap over an
+# existing ~/.ai-sync/.git without --force, so we skip when already set up.
+if [ -d "$HOME/.ai-sync/.git" ]; then
+    echo "  ✓ ai-sync sync repo (already bootstrapped)"
+    SUCCEEDED+=("ai-sync bootstrap")
+elif command -v ai-sync &>/dev/null; then
+    echo "  Bootstrapping ai-sync from git@github.com:montehoover/ai-config.git..."
+    if ai-sync bootstrap git@github.com:montehoover/ai-config.git; then
+        echo "  ✓ ai-sync bootstrapped"
+        SUCCEEDED+=("ai-sync bootstrap")
+    else
+        echo "  ✗ ai-sync bootstrap failed"
+        FAILED+=("ai-sync bootstrap")
+    fi
+fi
+
+# =============================================================================
+# Step 9: macOS Preferences
+# =============================================================================
+print_header "Step 9: macOS Preferences"
 
 # Dock — skip if already configured (avoids restarting Dock on re-runs)
 if [[ "$(defaults read com.apple.dock autohide 2>/dev/null)" != "1" ]] \
@@ -452,9 +499,9 @@ fi
 SUCCEEDED+=("iTerm2 default profile")
 
 # =============================================================================
-# Step 9: Browser Configuration (Extensions + Policies)
+# Step 10: Browser Configuration (Extensions + Policies)
 # =============================================================================
-print_header "Step 9: Browser Configuration"
+print_header "Step 10: Browser Configuration"
 
 # Chrome: External Extensions JSON (silent install on next Chrome launch).
 # Files are only written when content actually changes — re-running with
