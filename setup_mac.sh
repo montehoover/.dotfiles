@@ -247,8 +247,7 @@ else
         curl -L -o "$MINIFORGE_INSTALLER" "$MINIFORGE_URL"; then
         if try_or_assist "Miniforge install" "" "" \
             bash "$MINIFORGE_INSTALLER" -b -p "$HOME/miniforge3"; then
-            "$HOME/miniforge3/bin/conda" init zsh 2>/dev/null || true
-            echo "  ✓ Miniforge initialized (restart shell to activate)"
+            echo "  ✓ Miniforge installed (init handled by profile_shared; restart shell to activate)"
         fi
         rm -f "$MINIFORGE_INSTALLER"
     fi
