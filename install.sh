@@ -51,8 +51,10 @@ echo "                    Dock: autohide, size 64, no recents, hot corner"
 echo "                    Finder: hidden files, path bar, list view, extensions"
 echo "                    Trackpad: tap to click"
 echo "                    Screenshots: save to iCloud"
-echo "         11. Browser Extensions"
+echo "                    iTerm2: set Dynamic Profile as default"
+echo "         11. Browser Configuration"
 echo "                    Chrome + Firefox: LastPass, Adblock Plus"
+echo "                    Firefox: DuckDuckGo search, no password manager"
 fi
 echo ""
 read -rp "  Press Enter to continue, or 'q' to quit: " choice

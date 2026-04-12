@@ -41,9 +41,11 @@ Adds a sudoers drop-in rule that lets your user run `sudo` without a password pr
 ## What Gets Installed (macOS)
 
 **Via Homebrew (Brewfile):**
-- git
+- git, git-lfs
 - gh (GitHub CLI)
 - mas (Mac App Store CLI)
+- bun (JS runtime, required for Claude Code plugins)
+- lastpass-cli (secrets for automated setup)
 - iTerm2
 - Firefox
 - Google Chrome
@@ -61,10 +63,17 @@ Adds a sudoers drop-in rule that lets your user run `sudo` without a password pr
 **Dev tools (setup_mac.sh):**
 - Claude Code
 - Miniforge (conda)
+- ai-sync (syncs ~/.claude config across machines from a private git repo)
 
-**Browser extensions (staged for install on next launch):**
+**Claude Code Discord channel (setup_mac.sh):**
+- Discord plugin install (fallback if ai-sync didn't bring it in)
+- Bot token provisioned from LastPass secure note
+- Access config (user ID + group IDs) provisioned from LastPass
+
+**Browser configuration (staged for install on next launch):**
 - LastPass (Chrome + Firefox)
 - Adblock Plus (Chrome + Firefox)
+- Firefox: DuckDuckGo as default search engine, built-in password manager disabled
 
 **Shell/terminal (via submodules and config):**
 - Oh My Zsh
@@ -78,4 +87,5 @@ Adds a sudoers drop-in rule that lets your user run `sudo` without a password pr
 
 **Also configured:**
 - SSH key generation + GitHub auth
+- iTerm2 default profile (Dynamic Profile with custom colors and font)
 - macOS preferences (Dock autohide, Finder show hidden files/path bar/list view/extensions, tap-to-click, hot corner, iCloud screenshots)
