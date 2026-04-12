@@ -13,6 +13,18 @@ SUCCEEDED=()
 SKIPPED=()
 FAILED=()
 
+# --- Sudo: ask once, keep alive for the entire run --------------------------
+
+echo "  This script needs administrator privileges for a few steps."
+echo "  You will only be prompted once."
+echo ""
+sudo -v
+
+# Refresh sudo timestamp every 50 seconds until this script exits
+while true; do sudo -n -v 2>/dev/null; sleep 50; done &
+SUDO_KEEPALIVE_PID=$!
+trap 'kill $SUDO_KEEPALIVE_PID 2>/dev/null' EXIT
+
 # --- Helpers -----------------------------------------------------------------
 
 print_header() {
