@@ -3,6 +3,9 @@ brew "git"
 brew "git-lfs"
 brew "gh"
 brew "mas"
+tap "oven-sh/bun"
+brew "oven-sh/bun/bun"
+brew "lastpass-cli"
 
 # Applications
 cask "claude"

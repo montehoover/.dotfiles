@@ -195,7 +195,7 @@ echo "  Running brew bundle..."
 brew bundle --file="$SCRIPT_DIR/Brewfile" || true
 
 # Verify each expected formula/cask and report
-for formula in git git-lfs gh mas; do
+for formula in git git-lfs gh mas oven-sh/bun/bun lastpass-cli; do
     if brew list --formula | grep -q "^${formula}$"; then
         echo "  ✓ $formula"
         SUCCEEDED+=("$formula")
@@ -399,9 +399,122 @@ elif command -v ai-sync &>/dev/null; then
 fi
 
 # =============================================================================
-# Step 9: macOS Preferences
+# Step 9: Claude Code Discord Channel
 # =============================================================================
-print_header "Step 9: macOS Preferences"
+print_header "Step 9: Claude Code Discord Channel"
+
+DISCORD_CHANNEL_DIR="$HOME/.claude/channels/discord"
+DISCORD_ENV="$DISCORD_CHANNEL_DIR/.env"
+DISCORD_ACCESS="$DISCORD_CHANNEL_DIR/access.json"
+LPASS_NOTE="claude-code-discord"
+
+# 9a. Plugin install (fallback — ai-sync usually brings this in)
+if grep -q '"discord@claude-plugins-official"' "$HOME/.claude/plugins/installed_plugins.json" 2>/dev/null; then
+    echo "  ✓ Discord plugin (already installed)"
+    SUCCEEDED+=("Discord plugin")
+else
+    echo "  Installing Discord plugin..."
+    claude plugin marketplace add anthropics/claude-plugins-official 2>/dev/null || true
+    if claude plugin install -s user discord@claude-plugins-official; then
+        echo "  ✓ Discord plugin installed"
+        SUCCEEDED+=("Discord plugin")
+    else
+        echo "  ✗ Discord plugin install failed"
+        FAILED+=("Discord plugin")
+    fi
+fi
+
+# 9b. Bot token from LastPass → .env
+if [[ -f "$DISCORD_ENV" ]] && grep -q "^DISCORD_BOT_TOKEN=" "$DISCORD_ENV"; then
+    echo "  ✓ Discord bot token (already configured)"
+    SUCCEEDED+=("Discord bot token")
+else
+    echo "  Fetching Discord bot token from LastPass note '$LPASS_NOTE'..."
+    mkdir -p "$DISCORD_CHANNEL_DIR"
+
+    lpass_blob=""
+    if command -v lpass &>/dev/null && lpass status -q 2>/dev/null; then
+        lpass_blob=$(lpass show --notes "$LPASS_NOTE" 2>/dev/null) || true
+    fi
+
+    token=$(echo "$lpass_blob" | grep "^DISCORD_BOT_TOKEN=" | cut -d= -f2-)
+
+    if [[ -n "$token" ]]; then
+        echo "DISCORD_BOT_TOKEN=$token" > "$DISCORD_ENV"
+        chmod 600 "$DISCORD_ENV"
+        echo "  ✓ Discord bot token written from LastPass"
+        SUCCEEDED+=("Discord bot token")
+    else
+        try_or_assist "Discord bot token" \
+            'open "https://discord.com/developers/applications"' \
+            "Log in to LastPass CLI (lpass login <email>), or copy your bot token from the Discord Developer Portal and write it to $DISCORD_ENV as DISCORD_BOT_TOKEN=<token>." \
+            bash -c "[[ -f \"$DISCORD_ENV\" ]] && grep -q '^DISCORD_BOT_TOKEN=' \"$DISCORD_ENV\""
+    fi
+fi
+
+# 9c. Access config (user ID + group IDs from LastPass → access.json)
+if [[ -f "$DISCORD_ACCESS" ]]; then
+    echo "  ✓ Discord access config (already configured)"
+    SUCCEEDED+=("Discord access config")
+else
+    echo "  Building Discord access config from LastPass note '$LPASS_NOTE'..."
+    mkdir -p "$DISCORD_CHANNEL_DIR"
+
+    lpass_blob=""
+    if command -v lpass &>/dev/null && lpass status -q 2>/dev/null; then
+        lpass_blob=$(lpass show --notes "$LPASS_NOTE" 2>/dev/null) || true
+    fi
+
+    user_id=$(echo "$lpass_blob" | grep "^DISCORD_USER_ID=" | cut -d= -f2-)
+    group_ids_raw=$(echo "$lpass_blob" | grep "^DISCORD_GROUP_IDS=" | cut -d= -f2-)
+
+    if [[ -n "$user_id" ]] && [[ -n "$group_ids_raw" ]]; then
+        # Build groups object from comma-separated IDs
+        groups_json="{"
+        first=true
+        IFS=',' read -ra gids <<< "$group_ids_raw"
+        for gid in "${gids[@]}"; do
+            gid=$(echo "$gid" | tr -d ' ')
+            if [[ "$first" == true ]]; then
+                first=false
+            else
+                groups_json+=","
+            fi
+            groups_json+="
+    \"$gid\": {
+      \"requireMention\": false,
+      \"allowFrom\": [
+        \"$user_id\"
+      ]
+    }"
+        done
+        groups_json+="
+  }"
+
+        cat > "$DISCORD_ACCESS" <<EOFACCESS
+{
+  "dmPolicy": "pairing",
+  "allowFrom": [
+    "$user_id"
+  ],
+  "groups": $groups_json,
+  "pending": {}
+}
+EOFACCESS
+        echo "  ✓ Discord access config written from LastPass"
+        SUCCEEDED+=("Discord access config")
+    else
+        echo "  - Discord access config skipped (user ID or group IDs not found in LastPass)."
+        echo "    To set up manually: launch claude_c, DM your bot, run /discord:access pair <code>,"
+        echo "    then /discord:access group add <channelId> for each channel."
+        SKIPPED+=("Discord access config")
+    fi
+fi
+
+# =============================================================================
+# Step 10: macOS Preferences
+# =============================================================================
+print_header "Step 10: macOS Preferences"
 
 # Dock — skip if already configured (avoids restarting Dock on re-runs)
 if [[ "$(defaults read com.apple.dock autohide 2>/dev/null)" != "1" ]] \
@@ -499,9 +612,9 @@ fi
 SUCCEEDED+=("iTerm2 default profile")
 
 # =============================================================================
-# Step 10: Browser Configuration (Extensions + Policies)
+# Step 11: Browser Configuration (Extensions + Policies)
 # =============================================================================
-print_header "Step 10: Browser Configuration"
+print_header "Step 11: Browser Configuration"
 
 # Chrome: External Extensions JSON (silent install on next Chrome launch).
 # Files are only written when content actually changes — re-running with
@@ -602,6 +715,8 @@ echo "    [ ] Launch Chrome and Firefox once to trigger extension installation"
 echo "    [ ] System Settings → Internet Accounts → Add email/calendar accounts"
 echo "    [ ] Sign in to: Slack, OneDrive, Claude, Cursor"
 echo "    [ ] Grant permissions when prompted: Rectangle, Shottr, AltTab"
+echo "    [ ] If Discord channel was skipped: lpass login <email>, re-run install.sh"
+echo "    [ ] Verify Discord channel: launch claude_c, DM your bot to test"
 
 # Verification commands
 echo ""
