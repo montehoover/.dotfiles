@@ -132,6 +132,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
     unset __conda_setup
 
     if [ -f "$HOME/miniforge3/etc/profile.d/mamba.sh" ]; then
+        export MAMBA_ROOT_PREFIX="$HOME/miniforge3"
         . "$HOME/miniforge3/etc/profile.d/mamba.sh"
     fi
     # <<< conda initialize <<<
