@@ -737,6 +737,29 @@ else
 fi
 SUCCEEDED+=("Chrome extensions")
 
+# Chrome: disable "Hold ⌘Q to Quit" so it behaves like every other app.
+# Chrome ignores macOS defaults for this; it reads browser.confirm_to_quit
+# from its own Local State JSON. Must be set while Chrome is not running.
+CHROME_LOCAL_STATE="$HOME/Library/Application Support/Google/Chrome/Local State"
+if [ -f "$CHROME_LOCAL_STATE" ]; then
+    if pgrep -x "Google Chrome" >/dev/null; then
+        echo "  - Chrome hold-⌘Q: skipped (quit Chrome first, then re-run install.sh)"
+    else
+        python3 -c "
+import json, sys
+path = sys.argv[1]
+with open(path) as f:
+    d = json.load(f)
+d.setdefault('browser', {})['confirm_to_quit'] = False
+with open(path, 'w') as f:
+    json.dump(d, f, indent=2)
+" "$CHROME_LOCAL_STATE"
+        echo "  ✓ Chrome hold-⌘Q-to-quit disabled"
+    fi
+else
+    echo "  - Chrome hold-⌘Q: skipped (launch Chrome once first to create profile)"
+fi
+
 # Firefox: policies.json (installs extensions on next Firefox launch).
 # Lives inside the Firefox.app bundle, so a Firefox auto-update will erase it —
 # re-run install.sh after an update to put it back. Only re-written when
