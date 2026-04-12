@@ -427,14 +427,26 @@ else
 fi
 
 # Bootstrap the sync repo — clones montehoover/ai-config and applies it to
-# ~/.claude. Idempotent: the ai-sync CLI refuses to re-bootstrap over an
-# existing ~/.ai-sync/.git without --force, so we skip when already set up.
-if [ -d "$HOME/.ai-sync/.git" ]; then
-    echo "  ✓ ai-sync sync repo (already bootstrapped)"
-    SUCCEEDED+=("ai-sync bootstrap")
+# ~/.claude. Re-bootstraps with --force if the existing repo is broken (e.g.
+# remote doesn't exist).
+AISYNC_REPO="git@github.com:montehoover/ai-config.git"
+if [ -d "$HOME/.ai-sync/.git" ] && command -v ai-sync &>/dev/null; then
+    if ai-sync status &>/dev/null; then
+        echo "  ✓ ai-sync sync repo (already bootstrapped)"
+        SUCCEEDED+=("ai-sync bootstrap")
+    else
+        echo "  ai-sync repo exists but remote is broken — re-bootstrapping..."
+        if ai-sync bootstrap --force "$AISYNC_REPO"; then
+            echo "  ✓ ai-sync re-bootstrapped"
+            SUCCEEDED+=("ai-sync bootstrap")
+        else
+            echo "  ✗ ai-sync re-bootstrap failed"
+            FAILED+=("ai-sync bootstrap")
+        fi
+    fi
 elif command -v ai-sync &>/dev/null; then
-    echo "  Bootstrapping ai-sync from git@github.com:montehoover/ai-config.git..."
-    if ai-sync bootstrap git@github.com:montehoover/ai-config.git; then
+    echo "  Bootstrapping ai-sync from $AISYNC_REPO..."
+    if ai-sync bootstrap "$AISYNC_REPO"; then
         echo "  ✓ ai-sync bootstrapped"
         SUCCEEDED+=("ai-sync bootstrap")
     else
