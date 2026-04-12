@@ -231,6 +231,11 @@ for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab
     fi
 done
 
+# Homebrew calls `sudo -k` after privileged operations, which invalidates the
+# cached credentials and silently breaks the background keepalive loop.
+# Re-validate so later steps (e.g., Firefox policies) don't re-prompt.
+sudo -n -v 2>/dev/null || sudo -v
+
 # LastPass: log in now so credentials are available for Discord setup (Step 9).
 # lpass was just installed above, so this is the earliest we can prompt.
 if command -v lpass &>/dev/null && ! lpass status -q 2>/dev/null; then
