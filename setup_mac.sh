@@ -240,6 +240,10 @@ for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab
     fi
 done
 
+# Brew's cask installs call sudo -k, which invalidates our cached credential.
+# Re-validate now so the keepalive can maintain it for the rest of the script.
+sudo -n -v 2>/dev/null || sudo -v </dev/tty
+
 # LastPass: log in now so credentials are available for Discord setup (Step 9).
 # lpass was just installed above, so this is the earliest we can prompt.
 if command -v lpass &>/dev/null && ! lpass status -q 2>/dev/null; then
@@ -693,8 +697,6 @@ SUCCEEDED+=("Chrome extensions")
 FIREFOX_DIST="/Applications/Firefox.app/Contents/Resources/distribution"
 FIREFOX_POLICIES="$FIREFOX_DIST/policies.json"
 if [ -d "/Applications/Firefox.app" ]; then
-    # Re-validate sudo — brew's sudo -k may have expired the timestamp
-    sudo -n -v 2>/dev/null || sudo -v </dev/tty
     if [[ ! -d "$FIREFOX_DIST" ]]; then
         sudo mkdir -p "$FIREFOX_DIST"
     fi
