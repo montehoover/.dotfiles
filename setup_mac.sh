@@ -194,6 +194,16 @@ print_header "Step 3: Homebrew Packages"
 echo "  Running brew bundle..."
 brew bundle --file="$SCRIPT_DIR/Brewfile" || true
 
+# Unregister casks whose .app was removed from /Applications (e.g., macOS
+# "app is damaged" → Move to Trash) so the loop below will reinstall them.
+BREW_CASKROOM="$(brew --prefix)/Caskroom"
+for cask in $(brew list --cask 2>/dev/null); do
+    for app in "$BREW_CASKROOM/$cask"/*/*.app; do
+        [[ -d "$app" && ! -d "/Applications/${app##*/}" ]] && brew uninstall --cask --force "$cask" 2>/dev/null
+        break
+    done
+done
+
 # Verify each expected formula/cask and report
 for formula in git git-lfs gh mas oven-sh/bun/bun lastpass-cli; do
     if brew list --formula | grep -q "^${formula}$"; then
