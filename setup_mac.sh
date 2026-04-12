@@ -395,6 +395,10 @@ fi
 # =============================================================================
 # Step 8: ai-sync (syncs ~/.claude config across machines)
 # =============================================================================
+# Pause the sudo keepalive — ai-sync's interactive prompts read from /dev/tty
+# and the keepalive's fallback `sudo -v </dev/tty` races with them.
+kill $SUDO_KEEPALIVE_PID 2>/dev/null; wait $SUDO_KEEPALIVE_PID 2>/dev/null
+
 print_header "Step 8: ai-sync"
 
 # The installer may symlink into ~/.local/bin when /usr/local/bin isn't writable
@@ -438,6 +442,11 @@ elif command -v ai-sync &>/dev/null; then
         FAILED+=("ai-sync bootstrap")
     fi
 fi
+
+# Resume sudo keepalive now that ai-sync interactive prompts are done.
+sudo -n -v 2>/dev/null || sudo -v </dev/tty
+while true; do sudo -n -v 2>/dev/null || sudo -v </dev/tty; sleep 50; done &
+SUDO_KEEPALIVE_PID=$!
 
 # =============================================================================
 # Step 9: Claude Code Discord Channel
