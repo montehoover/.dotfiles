@@ -45,9 +45,10 @@ print_exit_message() {
     echo ""
 }
 
-# Associative array mapping failed item names to actionable remedies.
+# Parallel arrays: REMEDY_NAMES[i] → REMEDY_MSGS[i].
 # Printed in the summary so the user knows exactly what to fix.
-declare -A REMEDIES
+REMEDY_NAMES=()
+REMEDY_MSGS=()
 
 # Try a command; on failure record it with an actionable remedy and continue.
 #
@@ -68,7 +69,10 @@ try_cmd() {
     echo "  ✗ $name failed."
     [[ -n "$output" ]] && echo "$output" | sed 's/^/      /'
     FAILED+=("$name")
-    [[ -n "$remedy" ]] && REMEDIES["$name"]="$remedy"
+    if [[ -n "$remedy" ]]; then
+        REMEDY_NAMES+=("$name")
+        REMEDY_MSGS+=("$remedy")
+    fi
     return 1
 }
 
@@ -434,7 +438,8 @@ else
     else
         echo "  ✗ Discord bot token not found (LastPass CLI not logged in or note missing)."
         FAILED+=("Discord bot token")
-        REMEDIES["Discord bot token"]="Run: lpass login <email> && re-run install.sh, or manually write DISCORD_BOT_TOKEN=<token> to $DISCORD_ENV"
+        REMEDY_NAMES+=("Discord bot token")
+        REMEDY_MSGS+=("Run: lpass login <email> && re-run install.sh, or manually write DISCORD_BOT_TOKEN=<token> to $DISCORD_ENV")
     fi
 fi
 
@@ -562,7 +567,8 @@ if [ -d "$ICLOUD_DIR" ]; then
 else
     echo "  ✗ iCloud Drive not available — cannot set screenshot location."
     FAILED+=("iCloud screenshot location")
-    REMEDIES["iCloud screenshot location"]="Sign in to iCloud in System Settings → Apple ID, enable iCloud Drive, then re-run install.sh"
+    REMEDY_NAMES+=("iCloud screenshot location")
+    REMEDY_MSGS+=("Sign in to iCloud in System Settings → Apple ID, enable iCloud Drive, then re-run install.sh")
 fi
 
 # iTerm2 — set Dynamic Profile as default
@@ -686,9 +692,12 @@ if [ ${#FAILED[@]} -gt 0 ]; then
     echo "  Failed:"
     for item in "${FAILED[@]}"; do
         echo "    - $item"
-        if [[ -n "${REMEDIES[$item]:-}" ]]; then
-            echo "      Fix: ${REMEDIES[$item]}"
-        fi
+        for i in "${!REMEDY_NAMES[@]}"; do
+            if [[ "${REMEDY_NAMES[$i]}" == "$item" ]]; then
+                echo "      Fix: ${REMEDY_MSGS[$i]}"
+                break
+            fi
+        done
     done
 fi
 
