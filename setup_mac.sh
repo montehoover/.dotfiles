@@ -693,6 +693,8 @@ SUCCEEDED+=("Chrome extensions")
 FIREFOX_DIST="/Applications/Firefox.app/Contents/Resources/distribution"
 FIREFOX_POLICIES="$FIREFOX_DIST/policies.json"
 if [ -d "/Applications/Firefox.app" ]; then
+    # Re-validate sudo — brew's sudo -k may have expired the timestamp
+    sudo -n -v 2>/dev/null || sudo -v </dev/tty
     if [[ ! -d "$FIREFOX_DIST" ]]; then
         sudo mkdir -p "$FIREFOX_DIST"
     fi
@@ -761,7 +763,7 @@ echo "    [ ] Sign in to: Slack, OneDrive, Claude, Cursor"
 echo "    [ ] Grant permissions when prompted: Rectangle, Shottr, AltTab"
 
 discord_incomplete=false
-for item in "${FAILED[@]}" "${SKIPPED[@]}"; do
+for item in ${FAILED[@]+"${FAILED[@]}"} ${SKIPPED[@]+"${SKIPPED[@]}"}; do
     case "$item" in Discord*) discord_incomplete=true; break ;; esac
 done
 if $discord_incomplete; then
