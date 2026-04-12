@@ -753,8 +753,16 @@ echo "    [ ] Launch Chrome and Firefox once to trigger extension installation"
 echo "    [ ] System Settings → Internet Accounts → Add email/calendar accounts"
 echo "    [ ] Sign in to: Slack, OneDrive, Claude, Cursor"
 echo "    [ ] Grant permissions when prompted: Rectangle, Shottr, AltTab"
-echo "    [ ] If Discord channel was skipped: lpass login <email>, re-run install.sh"
-echo "    [ ] Verify Discord channel: launch claude_c, DM your bot to test"
+
+discord_incomplete=false
+for item in "${FAILED[@]}" "${SKIPPED[@]}"; do
+    case "$item" in Discord*) discord_incomplete=true; break ;; esac
+done
+if $discord_incomplete; then
+    echo "    [ ] Run: lpass login <email>, then re-run install.sh to set up Discord for Claude Code"
+else
+    echo "    [ ] Verify Discord channel: launch claude_c, DM your bot to test"
+fi
 
 # Verification commands
 echo ""
