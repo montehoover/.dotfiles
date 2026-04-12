@@ -45,19 +45,19 @@ print_exit_message() {
     echo ""
 }
 
-# Try a command. On failure: show error output, optionally open a helpful
-# app/URL, prompt the user to retry/skip/quit.
+# Associative array mapping failed item names to actionable remedies.
+# Printed in the summary so the user knows exactly what to fix.
+declare -A REMEDIES
+
+# Try a command; on failure record it with an actionable remedy and continue.
 #
 # Usage:
-#   try_or_assist "Name" "assist_cmd" "assist_msg" command arg1 arg2 ...
-#   try_or_assist "Name" "" "" command arg1 arg2 ...
-try_or_assist() {
+#   try_cmd "Name" "remedy message" command arg1 arg2 ...
+try_cmd() {
     local name="$1"
-    local assist_cmd="$2"
-    local assist_msg="$3"
-    shift 3
+    local remedy="$2"
+    shift 2
 
-    # Capture output for error reporting
     local output
     if output=$("$@" 2>&1); then
         echo "  ✓ $name"
@@ -65,46 +65,11 @@ try_or_assist() {
         return 0
     fi
 
-    # First attempt failed
-    echo ""
     echo "  ✗ $name failed."
-    echo "    Error output:"
-    echo "$output" | sed 's/^/      /'
-
-    if [[ -n "$assist_cmd" ]]; then
-        eval "$assist_cmd"
-    fi
-
-    if [[ -n "$assist_msg" ]]; then
-        echo ""
-        echo "    $assist_msg"
-    fi
-
-    echo ""
-    read -rp "    Press Enter to retry, 's' to skip, or 'q' to quit: " choice
-
-    if [[ "$choice" == "q" ]]; then
-        print_exit_message
-        exit 1
-    fi
-
-    if [[ "$choice" == "s" ]]; then
-        SKIPPED+=("$name")
-        return 1
-    fi
-
-    # Retry once
-    if output=$("$@" 2>&1); then
-        echo "  ✓ $name (on retry)"
-        SUCCEEDED+=("$name")
-        return 0
-    else
-        echo "  ✗ $name still failed — skipping."
-        echo "    Error output:"
-        echo "$output" | sed 's/^/      /'
-        FAILED+=("$name")
-        return 1
-    fi
+    [[ -n "$output" ]] && echo "$output" | sed 's/^/      /'
+    FAILED+=("$name")
+    [[ -n "$remedy" ]] && REMEDIES["$name"]="$remedy"
+    return 1
 }
 
 has_trackpad() {
@@ -222,7 +187,7 @@ for formula in git git-lfs gh mas oven-sh/bun/bun lastpass-cli; do
         echo "  ✓ $formula"
         SUCCEEDED+=("$formula")
     else
-        try_or_assist "$formula" "" "" brew install "$formula"
+        try_cmd "$formula" "Run: brew install $formula" brew install "$formula"
     fi
 done
 
@@ -244,7 +209,7 @@ for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab
         echo "  ✓ $cask"
         SUCCEEDED+=("$cask")
     else
-        try_or_assist "$cask" "" "" brew install --cask "$cask"
+        try_cmd "$cask" "Run: brew install --cask $cask" brew install --cask "$cask"
     fi
 done
 
@@ -295,7 +260,7 @@ if command -v claude &>/dev/null; then
     SUCCEEDED+=("Claude Code")
 else
     echo "  Installing Claude Code (native installer)..."
-    try_or_assist "Claude Code" "" "" \
+    try_cmd "Claude Code" "Run: curl -fsSL https://claude.ai/install.sh | bash" \
         bash -c 'curl -fsSL https://claude.ai/install.sh | bash'
 fi
 
@@ -307,9 +272,9 @@ else
     echo "  Installing Miniforge..."
     MINIFORGE_URL="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-${ARCH}.sh"
     MINIFORGE_INSTALLER="/tmp/Miniforge3-MacOSX-${ARCH}.sh"
-    if try_or_assist "Miniforge download" "" "" \
+    if try_cmd "Miniforge download" "Run: curl -L -o $MINIFORGE_INSTALLER $MINIFORGE_URL" \
         curl -L -o "$MINIFORGE_INSTALLER" "$MINIFORGE_URL"; then
-        if try_or_assist "Miniforge install" "" "" \
+        if try_cmd "Miniforge install" "Run: bash $MINIFORGE_INSTALLER -b -p $HOME/miniforge3" \
             bash "$MINIFORGE_INSTALLER" -b -p "$HOME/miniforge3"; then
             echo "  ✓ Miniforge installed (init handled by profile_shared; restart shell to activate)"
         fi
@@ -467,10 +432,9 @@ else
         echo "  ✓ Discord bot token written from LastPass"
         SUCCEEDED+=("Discord bot token")
     else
-        try_or_assist "Discord bot token" \
-            'open "https://discord.com/developers/applications"' \
-            "Log in to LastPass CLI (lpass login <email>), or copy your bot token from the Discord Developer Portal and write it to $DISCORD_ENV as DISCORD_BOT_TOKEN=<token>." \
-            bash -c "[[ -f \"$DISCORD_ENV\" ]] && grep -q '^DISCORD_BOT_TOKEN=' \"$DISCORD_ENV\""
+        echo "  ✗ Discord bot token not found (LastPass CLI not logged in or note missing)."
+        FAILED+=("Discord bot token")
+        REMEDIES["Discord bot token"]="Run: lpass login <email> && re-run install.sh, or manually write DISCORD_BOT_TOKEN=<token> to $DISCORD_ENV"
     fi
 fi
 
@@ -597,10 +561,8 @@ if [ -d "$ICLOUD_DIR" ]; then
     SUCCEEDED+=("Screenshot location")
 else
     echo "  ✗ iCloud Drive not available — cannot set screenshot location."
-    try_or_assist "iCloud screenshot location" \
-        'open "x-apple.systempreferences:com.apple.AppleIDPrefPane"' \
-        "Apple ID settings opened. Sign in and enable iCloud Drive, then press Enter to retry." \
-        bash -c "[ -d \"$ICLOUD_DIR\" ] && mkdir -p \"$ICLOUD_SCREENSHOTS\" && defaults write com.apple.screencapture location \"$ICLOUD_SCREENSHOTS\""
+    FAILED+=("iCloud screenshot location")
+    REMEDIES["iCloud screenshot location"]="Sign in to iCloud in System Settings → Apple ID, enable iCloud Drive, then re-run install.sh"
 fi
 
 # iTerm2 — set Dynamic Profile as default
@@ -722,7 +684,12 @@ echo "  Failed:    ${#FAILED[@]} items"
 if [ ${#FAILED[@]} -gt 0 ]; then
     echo ""
     echo "  Failed:"
-    printf "    - %s\n" "${FAILED[@]}"
+    for item in "${FAILED[@]}"; do
+        echo "    - $item"
+        if [[ -n "${REMEDIES[$item]:-}" ]]; then
+            echo "      Fix: ${REMEDIES[$item]}"
+        fi
+    done
 fi
 
 if [ ${#SKIPPED[@]} -gt 0 ]; then
