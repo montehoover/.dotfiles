@@ -20,8 +20,11 @@ echo "  You will only be prompted once."
 echo ""
 sudo -v
 
-# Refresh sudo timestamp every 50 seconds until this script exits
-while true; do sudo -n -v 2>/dev/null; sleep 50; done &
+# Refresh sudo timestamp every 50 seconds until this script exits.
+# Use `sudo -v` (interactive via /dev/tty) as fallback because Homebrew
+# calls `sudo -k` after privileged operations, which silently invalidates
+# the timestamp and makes `sudo -n -v` fail permanently.
+while true; do sudo -n -v 2>/dev/null || sudo -v </dev/tty; sleep 50; done &
 SUDO_KEEPALIVE_PID=$!
 trap 'kill $SUDO_KEEPALIVE_PID 2>/dev/null' EXIT
 
@@ -230,11 +233,6 @@ for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab
         try_cmd "$cask" "Run: brew install --cask $cask" brew install --cask "$cask"
     fi
 done
-
-# Homebrew calls `sudo -k` after privileged operations, which invalidates the
-# cached credentials and silently breaks the background keepalive loop.
-# Re-validate so later steps (e.g., Firefox policies) don't re-prompt.
-sudo -n -v 2>/dev/null || sudo -v
 
 # LastPass: log in now so credentials are available for Discord setup (Step 9).
 # lpass was just installed above, so this is the earliest we can prompt.
