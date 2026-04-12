@@ -198,29 +198,35 @@ if command -v git-lfs &>/dev/null; then
     }
 fi
 
-# Verify each expected cask. If brew thinks a cask is installed but the .app
-# is missing from /Applications (e.g., "app is damaged" → Move to Trash),
-# force-reinstall it.
+# Verify each expected cask. Check for the actual .app in /Applications,
+# not just whether brew has it registered. If the app is missing (e.g.,
+# "app is damaged" → Move to Trash), uninstall the stale registration
+# and reinstall from scratch.
+#
+# Cask name → expected .app name (only where they differ)
+cask_app_name() {
+    case "$1" in
+        google-chrome) echo "Google Chrome" ;;
+        alt-tab)       echo "AltTab" ;;
+        iterm2)        echo "iTerm" ;;
+        *)             echo "$1" ;;
+    esac
+}
+
 for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab cursor; do
-    if brew list --cask 2>/dev/null | grep -q "^${cask}$"; then
-        # Check that the .app actually exists in /Applications
-        cask_app=$(brew info --cask "$cask" 2>/dev/null | grep -o '/Applications/.*\.app' | head -1)
-        if [[ -n "$cask_app" ]] && [[ ! -d "$cask_app" ]]; then
-            echo "  ↻ $cask registered but $cask_app missing — reinstalling..."
-            brew reinstall --cask "$cask" 2>/dev/null && {
-                echo "  ✓ $cask (reinstalled)"
-                SUCCEEDED+=("$cask")
-            } || {
-                echo "  ✗ $cask reinstall failed."
-                FAILED+=("$cask")
-                REMEDY_NAMES+=("$cask")
-                REMEDY_MSGS+=("Run: brew reinstall --cask $cask")
-            }
-        else
-            echo "  ✓ $cask"
-            SUCCEEDED+=("$cask")
-        fi
+    app_name="$(cask_app_name "$cask")"
+    # Case-insensitive check for the .app bundle
+    app_path=$(find /Applications -maxdepth 1 -iname "${app_name}.app" -print -quit 2>/dev/null)
+
+    if [[ -n "$app_path" ]]; then
+        echo "  ✓ $cask"
+        SUCCEEDED+=("$cask")
     else
+        # App missing — clear any stale brew registration and install fresh
+        if brew list --cask 2>/dev/null | grep -q "^${cask}$"; then
+            echo "  ↻ $cask registered in brew but app missing — reinstalling..."
+            brew uninstall --cask --force "$cask" 2>/dev/null
+        fi
         try_cmd "$cask" "Run: brew install --cask $cask" brew install --cask "$cask"
     fi
 done
