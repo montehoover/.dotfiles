@@ -17,6 +17,27 @@ I have a few aliases that I like in [.profile_shared](./profile_shared).
 
 This repo also helps me sync the small basics like .gitconfig and .ssh configs. I also use this repo to carry around slurm/sbatch templates which I find handy.
 
+## Passwordless sudo (optional)
+
+Adds a sudoers drop-in rule that lets your user run `sudo` without a password prompt, which is useful for automated scripts and tools like Claude Code that run in non-interactive shells.
+
+**Setup:** run `sudo visudo -f /etc/sudoers.d/nopasswd` and add this single line (replacing `monte` with your username), then save:
+
+    monte ALL=(ALL) NOPASSWD: ALL
+
+**Temporarily disable:** sudoers ignores files with a `.` in the name, so renaming the file acts as a toggle.
+
+    sudo mv /etc/sudoers.d/nopasswd /etc/sudoers.d/nopasswd.off   # disable
+    sudo mv /etc/sudoers.d/nopasswd.off /etc/sudoers.d/nopasswd   # re-enable
+
+**Revert entirely:** remove the drop-in file and sudo immediately reverts to requiring a password.
+
+    sudo rm /etc/sudoers.d/nopasswd
+
+**Check if enabled:** the `-n` flag makes sudo fail rather than prompt, so this tests whether passwordless sudo is active.
+
+    sudo -n true 2>/dev/null && echo "enabled" || echo "disabled"
+
 ## What Gets Installed (macOS)
 
 **Via Homebrew (Brewfile):**
