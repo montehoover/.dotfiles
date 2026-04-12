@@ -16,9 +16,6 @@
         if: '[ ! -e ~/.ssh/config ] || [ -L ~/.ssh/config ]'
     ~/.tmux.conf: tmux.conf
     ~/.zshrc: zshrc
-    ~/Library/Application Support/iTerm2/DynamicProfiles/monte-profile.json:
-        path: iterm2/monte-profile.json
-        create: true
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

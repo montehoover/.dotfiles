@@ -642,8 +642,20 @@ else
     REMEDY_MSGS+=("Sign in to iCloud in System Settings → Apple ID, enable iCloud Drive, then re-run install.sh")
 fi
 
-# iTerm2 — set Dynamic Profile as default
+# iTerm2 — generate dynamic profile with correct $HOME and set as default
 ITERM_PROFILE_GUID="7812A989-1897-40CB-BE81-10479BF68E9D"
+ITERM_PLIST="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
+ITERM_DYNAMIC_DIR="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
+ITERM_PROFILE_SRC="$SCRIPT_DIR/iterm2/monte-profile.json"
+ITERM_PROFILE_DST="$ITERM_DYNAMIC_DIR/monte-profile.json"
+
+# Generate the dynamic profile with $HOME expanded (iTerm2 needs absolute paths)
+mkdir -p "$ITERM_DYNAMIC_DIR"
+# Remove old symlink from previous dotbot-managed installs
+[ -L "$ITERM_PROFILE_DST" ] && rm "$ITERM_PROFILE_DST"
+sed "s|__HOME__|$HOME|g" "$ITERM_PROFILE_SRC" > "$ITERM_PROFILE_DST"
+echo "  ✓ iTerm2 dynamic profile generated with home=$HOME"
+
 if [[ "$(defaults read com.googlecode.iterm2 "Default Bookmark Guid" 2>/dev/null)" == "$ITERM_PROFILE_GUID" ]]; then
     echo "  ✓ iTerm2 default profile (already configured)"
 else
@@ -669,6 +681,20 @@ else
     else
         echo "  - iTerm2 not installed — skipping default profile setup."
     fi
+fi
+# iTerm2 caches dynamic profiles into New Bookmarks, which can override the
+# dynamic profile's working directory. Force the correct values in the cache.
+if [ -f "$ITERM_PLIST" ]; then
+    PROFILE_COUNT=$(/usr/libexec/PlistBuddy -c "Print :New\ Bookmarks" "$ITERM_PLIST" 2>/dev/null | grep -c "Dict")
+    for (( i=0; i<PROFILE_COUNT; i++ )); do
+        CACHED_GUID=$(/usr/libexec/PlistBuddy -c "Print :New\ Bookmarks:$i:Guid" "$ITERM_PLIST" 2>/dev/null)
+        if [[ "$CACHED_GUID" == "$ITERM_PROFILE_GUID" ]]; then
+            /usr/libexec/PlistBuddy -c "Set :New\ Bookmarks:$i:Custom\ Directory Yes" "$ITERM_PLIST"
+            /usr/libexec/PlistBuddy -c "Set :New\ Bookmarks:$i:Working\ Directory $HOME/claude" "$ITERM_PLIST"
+            echo "  ✓ iTerm2 working directory set to ~/claude"
+            break
+        fi
+    done
 fi
 SUCCEEDED+=("iTerm2 default profile")
 

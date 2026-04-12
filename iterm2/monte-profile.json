@@ -2,7 +2,7 @@
   "Profiles": [
     {
       "Custom Directory": "Yes",
-      "Working Directory": "/Users/monte/claude",
+      "Working Directory": "__HOME__/claude",
       "Ansi 12 Color": {
         "Green Component": 0.3333333432674408,
         "Red Component": 0.3333333432674408,
