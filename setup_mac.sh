@@ -175,17 +175,7 @@ print_header "Step 3: Homebrew Packages"
 echo "  Running brew bundle..."
 brew bundle --file="$SCRIPT_DIR/Brewfile" || true
 
-# Unregister casks whose .app was removed from /Applications (e.g., macOS
-# "app is damaged" → Move to Trash) so the loop below will reinstall them.
-BREW_CASKROOM="$(brew --prefix)/Caskroom"
-for cask in $(brew list --cask 2>/dev/null); do
-    for app in "$BREW_CASKROOM/$cask"/*/*.app; do
-        [[ -d "$app" && ! -d "/Applications/${app##*/}" ]] && brew uninstall --cask --force "$cask" 2>/dev/null
-        break
-    done
-done
-
-# Verify each expected formula/cask and report
+# Verify each expected formula and report
 for formula in git git-lfs gh mas oven-sh/bun/bun lastpass-cli; do
     if brew list --formula | grep -q "^${formula}$"; then
         echo "  ✓ $formula"
@@ -208,14 +198,45 @@ if command -v git-lfs &>/dev/null; then
     }
 fi
 
+# Verify each expected cask. If brew thinks a cask is installed but the .app
+# is missing from /Applications (e.g., "app is damaged" → Move to Trash),
+# force-reinstall it.
 for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab cursor; do
-    if brew list --cask | grep -q "^${cask}$"; then
-        echo "  ✓ $cask"
-        SUCCEEDED+=("$cask")
+    if brew list --cask 2>/dev/null | grep -q "^${cask}$"; then
+        # Check that the .app actually exists in /Applications
+        cask_app=$(brew info --cask "$cask" 2>/dev/null | grep -o '/Applications/.*\.app' | head -1)
+        if [[ -n "$cask_app" ]] && [[ ! -d "$cask_app" ]]; then
+            echo "  ↻ $cask registered but $cask_app missing — reinstalling..."
+            brew reinstall --cask "$cask" 2>/dev/null && {
+                echo "  ✓ $cask (reinstalled)"
+                SUCCEEDED+=("$cask")
+            } || {
+                echo "  ✗ $cask reinstall failed."
+                FAILED+=("$cask")
+                REMEDY_NAMES+=("$cask")
+                REMEDY_MSGS+=("Run: brew reinstall --cask $cask")
+            }
+        else
+            echo "  ✓ $cask"
+            SUCCEEDED+=("$cask")
+        fi
     else
         try_cmd "$cask" "Run: brew install --cask $cask" brew install --cask "$cask"
     fi
 done
+
+# LastPass: log in now so credentials are available for Discord setup (Step 9).
+# lpass was just installed above, so this is the earliest we can prompt.
+if command -v lpass &>/dev/null && ! lpass status -q 2>/dev/null; then
+    echo ""
+    echo "  LastPass login is needed for Discord channel setup (Step 9)."
+    read -rp "  Enter your LastPass email (or press Enter to skip): " lpass_email
+    if [[ -n "$lpass_email" ]]; then
+        lpass login "$lpass_email" || echo "  - LastPass login failed — Discord setup will be skipped."
+    else
+        echo "  - Skipping LastPass login."
+    fi
+fi
 
 # =============================================================================
 # Step 4: Nerd Fonts
