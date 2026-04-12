@@ -114,6 +114,9 @@ write_if_changed() {
 
 ARCH=$(uname -m)  # arm64 or x86_64
 
+# Ensure ~/claude exists before iTerm2 dynamic profile references it
+mkdir -p "$HOME/claude"
+
 # =============================================================================
 # Step 1: Xcode CLI Tools
 # =============================================================================
