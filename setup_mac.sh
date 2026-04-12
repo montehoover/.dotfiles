@@ -234,6 +234,9 @@ for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab
             brew uninstall --cask --force "$cask" 2>/dev/null
         fi
         try_cmd "$cask" "Run: brew install --cask $cask" brew install --cask "$cask"
+        # Strip quarantine from freshly installed app
+        app_path=$(find /Applications -maxdepth 1 -iname "${app_name}.app" -print -quit 2>/dev/null)
+        [[ -n "$app_path" ]] && xattr -cr "$app_path" 2>/dev/null
     fi
 done
 
