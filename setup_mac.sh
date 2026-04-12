@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 
 # =============================================================================
 # macOS Setup Script
@@ -223,9 +223,15 @@ done
 print_header "Step 4: Nerd Fonts"
 
 echo "  Installing Nerd Fonts..."
-bash "$SCRIPT_DIR/install_fonts.sh"
-echo "  ✓ Nerd Fonts"
-SUCCEEDED+=("Nerd Fonts")
+if bash "$SCRIPT_DIR/install_fonts.sh"; then
+    echo "  ✓ Nerd Fonts"
+    SUCCEEDED+=("Nerd Fonts")
+else
+    echo "  ✗ Nerd Fonts install failed."
+    FAILED+=("Nerd Fonts")
+    REMEDY_NAMES+=("Nerd Fonts")
+    REMEDY_MSGS+=("Run: bash $SCRIPT_DIR/install_fonts.sh")
+fi
 
 # =============================================================================
 # Step 5: Mac App Store Apps
@@ -298,9 +304,13 @@ if [ -f "$HOME/.ssh/id_ed25519" ]; then
 else
     echo "  Generating SSH key..."
     mkdir -p "$HOME/.ssh"
-    ssh-keygen -t ed25519 -C "monte.b.hoover@gmail.com" -f "$HOME/.ssh/id_ed25519" -N ""
-    echo "  ✓ SSH key generated"
-    SUCCEEDED+=("SSH key")
+    if ssh-keygen -t ed25519 -C "monte.b.hoover@gmail.com" -f "$HOME/.ssh/id_ed25519" -N ""; then
+        echo "  ✓ SSH key generated"
+        SUCCEEDED+=("SSH key")
+    else
+        echo "  ✗ SSH key generation failed."
+        FAILED+=("SSH key")
+    fi
 fi
 
 eval "$(ssh-agent -s)" &>/dev/null
