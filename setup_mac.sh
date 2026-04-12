@@ -239,7 +239,7 @@ if command -v git-lfs &>/dev/null; then
     }
 fi
 
-for cask in claude iterm2 firefox google-chrome rectangle shottr alt-tab cursor; do
+for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab cursor; do
     if brew list --cask | grep -q "^${cask}$"; then
         echo "  ✓ $cask"
         SUCCEEDED+=("$cask")
