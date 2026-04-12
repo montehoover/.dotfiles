@@ -278,7 +278,7 @@ else
 fi
 
 # Miniforge
-if command -v conda &>/dev/null; then
+if command -v conda &>/dev/null || [ -d "$HOME/miniforge3" ]; then
     echo "  ✓ Miniforge (already installed)"
     SUCCEEDED+=("Miniforge")
 else
