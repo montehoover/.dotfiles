@@ -65,6 +65,10 @@ Adds a sudoers drop-in rule that lets your user run `sudo` without a password pr
 - Miniforge (conda)
 - ai-sync (syncs ~/.claude config across machines from a private git repo)
 
+**LaunchAgents (setup_mac.sh):**
+- ai-sync nightly sync (pulls then pushes ~/.claude config daily at 2 AM)
+- Plist templates live in `launchd/` with `{{HOME}}` placeholders expanded at install time
+
 **Claude Code Discord channel (setup_mac.sh):**
 - Discord plugin install (fallback if ai-sync didn't bring it in)
 - Bot token provisioned from LastPass secure note
