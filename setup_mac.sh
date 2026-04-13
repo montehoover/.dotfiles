@@ -461,6 +461,36 @@ while true; do sudo -n -v 2>/dev/null || sudo -v </dev/tty; sleep 50; done &
 SUDO_KEEPALIVE_PID=$!
 
 # =============================================================================
+# Step 8b: ai-sync nightly LaunchAgent
+# =============================================================================
+print_header "Step 8b: ai-sync Nightly Sync (LaunchAgent)"
+
+PLIST_LABEL="com.ai-sync.nightly"
+PLIST_SRC="$SCRIPT_DIR/launchd/${PLIST_LABEL}.plist"
+PLIST_DST="$HOME/Library/LaunchAgents/${PLIST_LABEL}.plist"
+
+if [[ -f "$PLIST_SRC" ]]; then
+    mkdir -p "$HOME/Library/LaunchAgents"
+    # Expand {{HOME}} to actual home directory
+    sed "s|{{HOME}}|$HOME|g" "$PLIST_SRC" > "$PLIST_DST"
+
+    # Unload first if already loaded (ignore errors)
+    launchctl unload "$PLIST_DST" 2>/dev/null || true
+    if launchctl load "$PLIST_DST" 2>/dev/null; then
+        echo "  ✓ ai-sync nightly LaunchAgent (daily at 2:00 AM)"
+        SUCCEEDED+=("ai-sync LaunchAgent")
+    else
+        echo "  ✗ Failed to load ai-sync LaunchAgent"
+        FAILED+=("ai-sync LaunchAgent")
+        REMEDY_NAMES+=("ai-sync LaunchAgent")
+        REMEDY_MSGS+=("Run: launchctl load $PLIST_DST")
+    fi
+else
+    echo "  ✗ Plist template not found at $PLIST_SRC"
+    FAILED+=("ai-sync LaunchAgent")
+fi
+
+# =============================================================================
 # Step 9: Claude Code Discord Channel
 # =============================================================================
 print_header "Step 9: Claude Code Discord Channel"
