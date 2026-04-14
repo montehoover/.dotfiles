@@ -461,33 +461,94 @@ while true; do sudo -n -v 2>/dev/null || sudo -v </dev/tty; sleep 50; done &
 SUDO_KEEPALIVE_PID=$!
 
 # =============================================================================
-# Step 8b: ai-sync nightly LaunchAgent
+# Step 8b: launchd jobs (from launchd/config.yaml)
 # =============================================================================
-print_header "Step 8b: ai-sync Nightly Sync (LaunchAgent)"
+print_header "Step 8b: launchd Jobs"
 
-PLIST_LABEL="com.ai-sync.nightly"
-PLIST_SRC="$SCRIPT_DIR/launchd/${PLIST_LABEL}.plist"
-PLIST_DST="$HOME/Library/LaunchAgents/${PLIST_LABEL}.plist"
+LAUNCHD_CONFIG="$SCRIPT_DIR/launchd/config.yaml"
 
-if [[ -f "$PLIST_SRC" ]]; then
-    mkdir -p "$HOME/Library/LaunchAgents"
-    # Expand {{HOME}} to actual home directory
-    sed "s|{{HOME}}|$HOME|g" "$PLIST_SRC" > "$PLIST_DST"
+# Parse the simple YAML config. Each top-level key (unindented, ending with :)
+# starts a new entry; indented key: value lines are its properties.
+install_launchd_jobs() {
+    local label="" plist="" type="" run_by_default=""
 
-    # Unload first if already loaded (ignore errors)
-    launchctl unload "$PLIST_DST" 2>/dev/null || true
-    if launchctl load "$PLIST_DST" 2>/dev/null; then
-        echo "  ✓ ai-sync nightly LaunchAgent (daily at 2:00 AM)"
-        SUCCEEDED+=("ai-sync LaunchAgent")
-    else
-        echo "  ✗ Failed to load ai-sync LaunchAgent"
-        FAILED+=("ai-sync LaunchAgent")
-        REMEDY_NAMES+=("ai-sync LaunchAgent")
-        REMEDY_MSGS+=("Run: launchctl load $PLIST_DST")
-    fi
+    process_entry() {
+        [[ -z "$label" ]] && return
+
+        if [[ "$run_by_default" != "yes" ]]; then
+            echo "  - $label (skipped, run_by_default: no)"
+            SKIPPED+=("$label")
+            return
+        fi
+
+        local src="$SCRIPT_DIR/launchd/$plist"
+        if [[ ! -f "$src" ]]; then
+            echo "  ✗ Plist not found: $src"
+            FAILED+=("$label")
+            return
+        fi
+
+        local dst
+        if [[ "$type" == "LaunchDaemon" ]]; then
+            dst="/Library/LaunchDaemons/$plist"
+            sudo mkdir -p /Library/LaunchDaemons
+            sed "s|{{HOME}}|$HOME|g" "$src" | sudo tee "$dst" > /dev/null
+            sudo chown root:wheel "$dst"
+            sudo chmod 644 "$dst"
+            sudo launchctl unload "$dst" 2>/dev/null || true
+            if sudo launchctl load "$dst" 2>/dev/null; then
+                echo "  ✓ $label ($type)"
+                SUCCEEDED+=("$label")
+            else
+                echo "  ✗ Failed to load $label"
+                FAILED+=("$label")
+                REMEDY_NAMES+=("$label")
+                REMEDY_MSGS+=("Run: sudo launchctl load $dst")
+            fi
+        else
+            dst="$HOME/Library/LaunchAgents/$plist"
+            mkdir -p "$HOME/Library/LaunchAgents"
+            sed "s|{{HOME}}|$HOME|g" "$src" > "$dst"
+            launchctl unload "$dst" 2>/dev/null || true
+            if launchctl load "$dst" 2>/dev/null; then
+                echo "  ✓ $label ($type)"
+                SUCCEEDED+=("$label")
+            else
+                echo "  ✗ Failed to load $label"
+                FAILED+=("$label")
+                REMEDY_NAMES+=("$label")
+                REMEDY_MSGS+=("Run: launchctl load $dst")
+            fi
+        fi
+    }
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        # Skip blank lines and comments
+        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+
+        # Top-level key (no leading whitespace) starts a new entry
+        if [[ "$line" =~ ^([a-zA-Z0-9._-]+):$ ]]; then
+            process_entry
+            label="${BASH_REMATCH[1]}"
+            plist="" type="" run_by_default=""
+        elif [[ "$line" =~ ^[[:space:]]+([a-z_]+):[[:space:]]*(.+)$ ]]; then
+            local key="${BASH_REMATCH[1]}" val="${BASH_REMATCH[2]}"
+            case "$key" in
+                plist)          plist="$val" ;;
+                type)           type="$val" ;;
+                run_by_default) run_by_default="$val" ;;
+            esac
+        fi
+    done < "$LAUNCHD_CONFIG"
+    # Process the last entry
+    process_entry
+}
+
+if [[ -f "$LAUNCHD_CONFIG" ]]; then
+    install_launchd_jobs
 else
-    echo "  ✗ Plist template not found at $PLIST_SRC"
-    FAILED+=("ai-sync LaunchAgent")
+    echo "  ✗ launchd config not found at $LAUNCHD_CONFIG"
+    FAILED+=("launchd config")
 fi
 
 # =============================================================================

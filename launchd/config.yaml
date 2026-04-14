@@ -1,0 +1,9 @@
+com.ai-sync.nightly:
+  plist: com.ai-sync.nightly.plist
+  type: LaunchAgent
+  run_by_default: yes
+
+com.skills-sync.nightly:
+  plist: com.skills-sync.nightly.plist
+  type: LaunchDaemon
+  run_by_default: yes

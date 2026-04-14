@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.skills-sync.nightly</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/rsync</string>
+        <string>-a</string>
+        <string>--ignore-existing</string>
+        <string>/Users/monte/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/67850a29-7f0d-4f60-b1bf-fc64caa098a6/0dfb459c-c928-4115-b858-bca2e655f7c4/skills/</string>
+        <string>/Users/monte/.claude/skills/</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>2</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/skills-sync-nightly.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/skills-sync-nightly.log</string>
+
+    <key>UserName</key>
+    <string>monte</string>
+</dict>
+</plist>

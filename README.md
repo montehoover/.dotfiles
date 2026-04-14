@@ -65,9 +65,24 @@ Adds a sudoers drop-in rule that lets your user run `sudo` without a password pr
 - Miniforge (conda)
 - ai-sync (syncs ~/.claude config across machines from a private git repo)
 
-**LaunchAgents (setup_mac.sh):**
-- ai-sync nightly sync (pulls then pushes ~/.claude config daily at 2 AM)
+**launchd jobs (setup_mac.sh):**
+- Configured in `launchd/config.yaml`; each entry specifies its plist, type (LaunchAgent or LaunchDaemon), and whether to install by default
+- Jobs with `run_by_default: yes` are installed automatically; others are skipped
 - Plist templates live in `launchd/` with `{{HOME}}` placeholders expanded at install time
+- To manually load a skipped job:
+
+      # LaunchAgent
+      sed "s|{{HOME}}|$HOME|g" launchd/com.example.plist > ~/Library/LaunchAgents/com.example.plist
+      launchctl load ~/Library/LaunchAgents/com.example.plist
+
+      # LaunchDaemon
+      sed "s|{{HOME}}|$HOME|g" launchd/com.example.plist | sudo tee /Library/LaunchDaemons/com.example.plist > /dev/null
+      sudo chown root:wheel /Library/LaunchDaemons/com.example.plist
+      sudo launchctl load /Library/LaunchDaemons/com.example.plist
+
+- Current jobs:
+  - **com.ai-sync.nightly** (LaunchAgent, default: yes) — pulls then pushes ~/.claude config daily at 2 AM
+  - **com.skills-sync.nightly** (LaunchDaemon, default: yes) — copies new Claude Code skill folders into ~/.claude/skills daily at 2 AM
 
 **Claude Code Discord channel (setup_mac.sh):**
 - Discord plugin install (fallback if ai-sync didn't bring it in)
