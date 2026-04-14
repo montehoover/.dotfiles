@@ -7,3 +7,8 @@ com.skills-sync.nightly:
   plist: com.skills-sync.nightly.plist
   type: LaunchDaemon
   run_by_default: yes
+
+com.claude.email:
+  plist: com.claude.email.plist
+  type: LaunchAgent
+  run_by_default: yes
