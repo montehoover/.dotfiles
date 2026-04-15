@@ -179,7 +179,7 @@ fi
 print_header "Step 3: Homebrew Packages"
 
 echo "  Running brew bundle..."
-brew bundle --file="$SCRIPT_DIR/Brewfile" || true
+brew bundle --no-upgrade --file="$SCRIPT_DIR/Brewfile" || true
 
 # Verify each expected formula and report
 for formula in git git-lfs gh mas oven-sh/bun/bun lastpass-cli; do
@@ -858,6 +858,14 @@ CHROME_LOCAL_STATE="$HOME/Library/Application Support/Google/Chrome/Local State"
 if [ -f "$CHROME_LOCAL_STATE" ]; then
     if pgrep -x "Google Chrome" >/dev/null; then
         echo "  - Chrome hold-⌘Q: skipped (quit Chrome first, then re-run install.sh)"
+    elif python3 -c "
+import json, sys
+path = sys.argv[1]
+with open(path) as f:
+    d = json.load(f)
+sys.exit(0 if d.get('browser', {}).get('confirm_to_quit') is False else 1)
+" "$CHROME_LOCAL_STATE" 2>/dev/null; then
+        echo "  ✓ Chrome hold-⌘Q-to-quit (already disabled)"
     else
         python3 -c "
 import json, sys
