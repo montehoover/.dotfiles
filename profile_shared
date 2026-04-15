@@ -34,8 +34,8 @@ alias gitpass='git config --global credential.helper store && echo "Ready to sav
 # claude_c  = normal permission prompts
 # claude_cd = permission prompts still on by default, but the bypassPermissions mode
 #             is *available* to switch into mid-session if needed.
-alias claude_c='claude --channels plugin:discord@claude-plugins-official'
-alias claude_cd='claude --channels plugin:discord@claude-plugins-official --allow-dangerously-skip-permissions'
+alias claude_c='DISCORD_MIRROR=1 claude --channels plugin:discord@claude-plugins-official'
+alias claude_cd='DISCORD_MIRROR=1 claude --channels plugin:discord@claude-plugins-official --allow-dangerously-skip-permissions'
 
 # Show Slurm jobs on a cluster. Number indicates spaces for the column info. "." is for right justified.
 # u: USER 
