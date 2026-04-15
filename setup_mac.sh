@@ -299,6 +299,17 @@ for i in "${!MAS_IDS[@]}"; do
     fi
 done
 
+# Clean up Microsoft Office keychain identity entries so the first app launched
+# post-install creates them with ACLs that cover ALL Office apps, not just
+# whichever app happened to be installed first by `mas`.  (The MAS sandbox
+# causes the creating app to be the sole entry in the ACL; deleting and
+# letting the suite recreate them on first launch fixes persistent sign-out.)
+echo "  Clearing Office keychain identity cache (will be recreated on first launch)..."
+security delete-generic-password -l "Microsoft Office Identities Cache 3" 2>/dev/null && \
+    echo "  ✓ Deleted Identities Cache" || echo "  – Identities Cache not present (OK)"
+security delete-generic-password -l "Microsoft Office Identities Settings 3" 2>/dev/null && \
+    echo "  ✓ Deleted Identities Settings" || echo "  – Identities Settings not present (OK)"
+
 # =============================================================================
 # Step 6: Claude Code & Miniforge
 # =============================================================================
