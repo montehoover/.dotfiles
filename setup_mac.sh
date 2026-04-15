@@ -304,6 +304,18 @@ done
 # whichever app happened to be installed first by `mas`.  (The MAS sandbox
 # causes the creating app to be the sole entry in the ACL; deleting and
 # letting the suite recreate them on first launch fixes persistent sign-out.)
+# Quit running Office apps first so they don't immediately recreate broken entries.
+OFFICE_APPS=("Microsoft Word" "Microsoft Excel" "Microsoft PowerPoint" "Microsoft OneNote")
+quit_any=false
+for app in "${OFFICE_APPS[@]}"; do
+    if pgrep -xq "$app"; then
+        echo "  Quitting $app..."
+        osascript -e "tell application \"$app\" to quit" 2>/dev/null
+        quit_any=true
+    fi
+done
+$quit_any && sleep 2
+
 echo "  Clearing Office keychain identity cache (will be recreated on first launch)..."
 security delete-generic-password -l "Microsoft Office Identities Cache 3" 2>/dev/null && \
     echo "  ✓ Deleted Identities Cache" || echo "  – Identities Cache not present (OK)"
