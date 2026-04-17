@@ -281,6 +281,59 @@ print_header "Step 5: Mac App Store Apps"
 MAS_IDS=(462054704 462058435 462062816 784801555 985367838 823766827 803453959)
 MAS_NAMES=("Microsoft Word" "Microsoft Excel" "Microsoft PowerPoint" "Microsoft OneNote" "Microsoft Outlook" "OneDrive" "Slack")
 
+# If any Office app is missing from /Applications while user-level Office state
+# from a prior install still exists on disk, clean that state before the MAS
+# install.  Stale state (Group Containers and per-app Containers) survives a
+# MAS uninstall and defeats sign-in persistence across cold launches of the
+# reinstalled apps.  Teams and OneDrive hold their auth inside their own
+# sandbox containers and are not affected by this cleanup.
+OFFICE_APPS=("Microsoft Word" "Microsoft Excel" "Microsoft PowerPoint" "Microsoft OneNote" "Microsoft Outlook")
+stale_office_state=false
+if [ -d "$HOME/Library/Group Containers/UBF8T346G9.Office" ]; then
+    for app in "${OFFICE_APPS[@]}"; do
+        if [ ! -d "/Applications/${app}.app" ]; then
+            stale_office_state=true
+            break
+        fi
+    done
+fi
+
+if $stale_office_state; then
+    echo "  Detected stale Office state from prior install; cleaning before reinstall..."
+    for app in "${OFFICE_APPS[@]}"; do
+        if pgrep -xq "$app"; then
+            osascript -e "tell application \"$app\" to quit" 2>/dev/null
+        fi
+    done
+    sleep 2
+    # Outlook caches email attachments with the user-immutable flag, which
+    # blocks rm; clear it recursively before deleting.
+    chflags -R nouchg "$HOME/Library/Group Containers/UBF8T346G9.Office" 2>/dev/null || true
+    chflags -R nouchg "$HOME/Library/Containers/com.microsoft.Outlook" 2>/dev/null || true
+    rm -rf \
+        "$HOME/Library/Group Containers/UBF8T346G9.Office" \
+        "$HOME/Library/Group Containers/UBF8T346G9.OfficeExcelWidget" \
+        "$HOME/Library/Group Containers/UBF8T346G9.OfficeOneDriveSyncIntegration" \
+        "$HOME/Library/Group Containers/UBF8T346G9.OfficeOsfWebHost" \
+        "$HOME/Library/Group Containers/UBF8T346G9.OfficePPTWidget" \
+        "$HOME/Library/Group Containers/UBF8T346G9.OfficeWordWidget" \
+        "$HOME/Library/Group Containers/UBF8T346G9.com.microsoft.oneauth" \
+        "$HOME/Library/Containers/com.microsoft.Word" \
+        "$HOME/Library/Containers/com.microsoft.Excel" \
+        "$HOME/Library/Containers/com.microsoft.Powerpoint" \
+        "$HOME/Library/Containers/com.microsoft.Outlook" \
+        "$HOME/Library/Containers/com.microsoft.onenote.mac"
+    # The Office apps recreate these keychain items on first sign-in after
+    # reinstall, with ACLs that match the freshly-installed binaries.
+    security delete-generic-password -l "Microsoft Office Identities Cache 3" >/dev/null 2>&1 || true
+    security delete-generic-password -l "Microsoft Office Identities Settings 3" >/dev/null 2>&1 || true
+    security delete-generic-password -l "com.microsoft.OutlookCore.SecretV2" >/dev/null 2>&1 || true
+    for label in $(security dump-keychain 2>/dev/null | awk -F'"' '/0x00000007 <blob>="com\.microsoft\.oneauth\./{print $2}' | sort -u); do
+        security delete-generic-password -l "$label" >/dev/null 2>&1 || true
+    done
+    echo "  ✓ Stale Office state cleared"
+fi
+
 for i in "${!MAS_IDS[@]}"; do
     app_id="${MAS_IDS[$i]}"
     app_name="${MAS_NAMES[$i]}"
@@ -298,29 +351,6 @@ for i in "${!MAS_IDS[@]}"; do
         fi
     fi
 done
-
-# Clean up Microsoft Office keychain identity entries so the first app launched
-# post-install creates them with ACLs that cover ALL Office apps, not just
-# whichever app happened to be installed first by `mas`.  (The MAS sandbox
-# causes the creating app to be the sole entry in the ACL; deleting and
-# letting the suite recreate them on first launch fixes persistent sign-out.)
-# Quit running Office apps first so they don't immediately recreate broken entries.
-OFFICE_APPS=("Microsoft Word" "Microsoft Excel" "Microsoft PowerPoint" "Microsoft OneNote")
-quit_any=false
-for app in "${OFFICE_APPS[@]}"; do
-    if pgrep -xq "$app"; then
-        echo "  Quitting $app..."
-        osascript -e "tell application \"$app\" to quit" 2>/dev/null
-        quit_any=true
-    fi
-done
-$quit_any && sleep 2
-
-echo "  Clearing Office keychain identity cache (will be recreated on first launch)..."
-security delete-generic-password -l "Microsoft Office Identities Cache 3" 2>/dev/null && \
-    echo "  ✓ Deleted Identities Cache" || echo "  – Identities Cache not present (OK)"
-security delete-generic-password -l "Microsoft Office Identities Settings 3" 2>/dev/null && \
-    echo "  ✓ Deleted Identities Settings" || echo "  – Identities Settings not present (OK)"
 
 # =============================================================================
 # Step 6: Claude Code & Miniforge
