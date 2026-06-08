@@ -36,8 +36,8 @@ winget install OpenJS.NodeJS.LTS
 # =============================================================================
 # Applications
 # =============================================================================
-echo "Installing Cursor..."
-winget install Cursor.Cursor
+echo "Installing VS Code..."
+winget install Microsoft.VisualStudioCode
 echo "Installing Firefox..."
 winget install Mozilla.Firefox
 echo "Installing Chrome..."
@@ -134,7 +134,7 @@ echo ""
 echo "  MANUAL STEPS REMAINING:"
 echo "    - Launch Chrome and Firefox to trigger extension installation"
 echo "    - Sign in to Microsoft Office (M365)"
-echo "    - Sign in to: Slack, LastPass, Cursor"
+echo "    - Sign in to: Slack, LastPass, VS Code"
 echo "    - Restart shell to pick up new PATH entries"
 echo "============================================"
 echo ""

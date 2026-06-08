@@ -1,5 +1,9 @@
 # Do not load any themes or plugins when Cursor Agent runs
 # If running under Cursor Agent, set a flag to disable themes/plugins below
+# NOTE: Cursor was replaced by VS Code and is no longer installed. These three
+# lines only fire when Cursor's agent sets $CURSOR_AGENT, so they're now dead
+# code — safe to delete. Left in place since they're harmless if Cursor ever
+# returns and removing them isn't urgent.
 if [[ -n "$CURSOR_AGENT" ]]; then
   export OMZ_DISABLE=1
 fi

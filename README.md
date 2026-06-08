@@ -52,7 +52,7 @@ Adds a sudoers drop-in rule that lets your user run `sudo` without a password pr
 - Rectangle
 - Shottr
 - AltTab
-- Cursor
+- Visual Studio Code
 - Claude
 
 **Via Mac App Store (setup_mac.sh):**

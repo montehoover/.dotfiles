@@ -212,14 +212,15 @@ fi
 # Cask name → expected .app name (only where they differ)
 cask_app_name() {
     case "$1" in
-        google-chrome) echo "Google Chrome" ;;
-        alt-tab)       echo "AltTab" ;;
-        iterm2)        echo "iTerm" ;;
-        *)             echo "$1" ;;
+        google-chrome)       echo "Google Chrome" ;;
+        alt-tab)             echo "AltTab" ;;
+        iterm2)              echo "iTerm" ;;
+        visual-studio-code)  echo "Visual Studio Code" ;;
+        *)                   echo "$1" ;;
     esac
 }
 
-for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab cursor; do
+for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab visual-studio-code; do
     app_name="$(cask_app_name "$cask")"
     # Case-insensitive check for the .app bundle
     app_path=$(find /Applications -maxdepth 1 -iname "${app_name}.app" -print -quit 2>/dev/null)
@@ -983,7 +984,7 @@ echo ""
 echo "  MANUAL STEPS REMAINING:"
 echo "    [ ] Launch Chrome and Firefox once to trigger extension installation"
 echo "    [ ] System Settings → Internet Accounts → Add email/calendar accounts"
-echo "    [ ] Sign in to: Slack, OneDrive, Claude, Cursor"
+echo "    [ ] Sign in to: Slack, OneDrive, Claude, VS Code"
 echo "    [ ] Grant permissions when prompted: Rectangle, Shottr, AltTab"
 
 discord_incomplete=false
