@@ -156,3 +156,6 @@ command -v uv &>/dev/null && eval "$(uv generate-shell-completion zsh)"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Trading dashboard on vm-rockbound-services: SSH tunnel to oauth2-proxy (needs the VPN), then the browser.
+alias rocktrade='(lsof -nP -iTCP:4180 -sTCP:LISTEN >/dev/null || ssh -f -N -o ExitOnForwardFailure=yes -o ConnectTimeout=10 -o ServerAliveInterval=30 -L 4180:127.0.0.1:4180 ubuntu@rockbound-services.northcentralus.cloudapp.azure.com || { open -a "OpenVPN Connect"; echo "Could not reach vm-rockbound-services. Connect the VPN in OpenVPN Connect, then run rocktrade again."; false; }) && open http://localhost:4180'
