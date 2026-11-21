@@ -10,12 +10,16 @@
 # echo "Running ~/.profile_shared..."
 # -------- End Monte's notes -----------
 
-# Source secrets (API keys, tokens, etc.) from a non-tracked file
-[[ -f ~/.secrets ]] && source ~/.secrets
+# Tooling telemetry opt-outs
+export OPENSPEC_TELEMETRY=0
 
 # Update path to include non-standard location of executables:
 # Nexus cluster - probably not needed any more (as of Apr 2024)
 export PATH=/usr/local/cuda-11.3/bin:$PATH
+
+# My own utility scripts (ibkr-refresh, lidawake, ...). ~/.profile adds this too,
+# but only for login bash shells, so zsh never picks it up from there.
+[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
 
 # Aliases I want in both bash and zsh:
 # -a: hidden files, 
@@ -108,6 +112,9 @@ fi
 
 # MacOS-specific stuff:
 if [[ "$(uname)" == "Darwin" ]]; then
+    # Open a new iTerm window at the current directory
+    alias iterm='open -a iTerm "$PWD"'
+
     # ----- Monte note: things added by installer scripts ------ #
 
     # homebrew on Macbook
@@ -116,6 +123,11 @@ if [[ "$(uname)" == "Darwin" ]]; then
     # ai-sync installer falls back to ~/.local/bin when /usr/local/bin isn't
     # writable, so make sure it's on PATH.
     [[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
+
+    # Docker Desktop's own bin folder. ~/.local/bin/docker links into it, but the
+    # credential helper docker-credential-desktop lives there too, and without it
+    # on PATH every `docker pull` fails with "error getting credentials".
+    [[ -d "/Applications/Docker.app/Contents/Resources/bin" ]] && export PATH="$PATH:/Applications/Docker.app/Contents/Resources/bin"
 
     # >>> conda initialize >>>
     # !! Contents within this block are managed by 'conda init' !!
