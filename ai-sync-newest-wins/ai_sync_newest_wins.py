@@ -16,11 +16,14 @@ sync repo (outside the claude/ folder that ai-sync manages):
    reaches the other Mac.
 4. `ai-sync push`, then record the modification time of every synced file in
    mtimes.json and push that as a second commit.
+5. Delete ai-sync's backup folders older than two days.
 """
 
 import json
 import os
+import shutil
 import subprocess
+import time
 from pathlib import Path
 
 HOME = Path.home()
@@ -33,6 +36,9 @@ CONFLICT_PREFIX = "Conflict (keeping local): "
 # ai-sync stores these files with the home folder replaced by {{HOME}}.
 PATH_REWRITE_FILES = {"settings.json", "installed_plugins.json", "known_marketplaces.json"}
 HOME_TOKEN = b"{{HOME}}"
+# Each ai-sync pull copies every synced file (about 230 MB) into a new folder here.
+BACKUP_DIR = HOME / ".ai-sync-backups"
+BACKUP_KEEP_DAYS = 2
 
 
 def git(*args: str) -> str:
@@ -135,6 +141,19 @@ def record_mtimes() -> None:
         git("push", "-q", "origin", "main")
 
 
+def prune_backups() -> None:
+    """Delete ai-sync's backup folders older than BACKUP_KEEP_DAYS.
+
+    Only folders are removed; ai-sync never writes plain files here, so any
+    file someone saved here by hand is left alone.
+    """
+    cutoff = time.time() - BACKUP_KEEP_DAYS * 24 * 60 * 60
+    old = [d for d in BACKUP_DIR.iterdir() if d.is_dir() and d.stat().st_mtime < cutoff]
+    for backup in old:
+        shutil.rmtree(backup)
+    print(f"Deleted {len(old)} ai-sync backups older than {BACKUP_KEEP_DAYS} days")
+
+
 def main() -> None:
     assert AI_SYNC.exists(), f"ai-sync not found at {AI_SYNC}"
     assert (SYNC_REPO / ".git").is_dir(), f"no sync repo at {SYNC_REPO}"
@@ -159,6 +178,7 @@ def main() -> None:
 
     run_ai_sync("push")
     record_mtimes()
+    prune_backups()
     print(
         f"Done: {len(changed_remotely)} files changed on the other Mac, "
         f"{len(conflicts)} conflicts ({len(remote_won)} took the remote copy)"
