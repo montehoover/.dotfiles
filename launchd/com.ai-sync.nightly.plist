@@ -9,7 +9,7 @@
     <array>
         <string>/bin/bash</string>
         <string>-lc</string>
-        <string>{{HOME}}/.local/bin/ai-sync pull &amp;&amp; {{HOME}}/.local/bin/ai-sync push</string>
+        <string>uv run -q --project {{HOME}}/.dotfiles/ai-sync-newest-wins python {{HOME}}/.dotfiles/ai-sync-newest-wins/ai_sync_newest_wins.py</string>
     </array>
 
     <key>StartCalendarInterval</key>
@@ -21,9 +21,9 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/tmp/ai-sync-nightly.log</string>
+    <string>{{HOME}}/Library/Logs/ai-sync-nightly.log</string>
     <key>StandardErrorPath</key>
-    <string>/tmp/ai-sync-nightly.log</string>
+    <string>{{HOME}}/Library/Logs/ai-sync-nightly.log</string>
 
     <key>EnvironmentVariables</key>
     <dict>
