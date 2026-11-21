@@ -1,0 +1,6 @@
+[project]
+name = "ai-sync-newest-wins"
+version = "0.1.0"
+description = "Nightly ai-sync run where the newest copy of each file wins"
+requires-python = ">=3.11"
+dependencies = []
