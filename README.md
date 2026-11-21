@@ -52,6 +52,7 @@ Adds a sudoers drop-in rule that lets your user run `sudo` without a password pr
 - Rectangle
 - Shottr
 - AltTab
+- Hammerspoon (config in `hammerspoon/`, linked to `~/.hammerspoon`)
 - Visual Studio Code
 - Claude
 

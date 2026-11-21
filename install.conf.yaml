@@ -8,6 +8,7 @@
     ~/.bashrc: bashrc
     ~/.bash_logout: bash_logout
     ~/.gitconfig: gitconfig
+    ~/.hammerspoon: hammerspoon
     ~/.profile: profile
     ~/.profile_shared: profile_shared
     ~/.ssh/config:

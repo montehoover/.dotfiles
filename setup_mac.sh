@@ -220,7 +220,7 @@ cask_app_name() {
     esac
 }
 
-for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab visual-studio-code; do
+for cask in claude discord iterm2 firefox google-chrome rectangle shottr alt-tab hammerspoon visual-studio-code; do
     app_name="$(cask_app_name "$cask")"
     # Case-insensitive check for the .app bundle
     app_path=$(find /Applications -maxdepth 1 -iname "${app_name}.app" -print -quit 2>/dev/null)
