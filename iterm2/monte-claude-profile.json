@@ -1,0 +1,54 @@
+{
+  "Profiles": [
+    {
+      "Name": "Monte (Claude Code)",
+      "Guid": "3068BFD5-BE4A-4BC2-A044-B84829D4120E",
+      "Dynamic Profile Parent Name": "Monte",
+      "Bound Hosts": [
+        "&*claude*",
+        "&*tmux attach*choose-tree*"
+      ],
+      "Keyboard Map": {
+        "0x63-0x100000-0x8-0x1": {
+          "Text": "[99;6u",
+          "Action": 10,
+          "Escaping": 2,
+          "Apply Mode": 0,
+          "Version": 2
+        },
+        "0xf728-0x80000": {
+          "Text": "d",
+          "Action": 10
+        },
+        "0xf702-0x280000": {
+          "Text": "b",
+          "Action": 10
+        },
+        "0xf702-0x300000": {
+          "Text": "0x1",
+          "Action": 11
+        },
+        "0xf703-0x280000": {
+          "Text": "f",
+          "Action": 10
+        },
+        "0x7f-0x100000": {
+          "Text": "0x15",
+          "Action": 11
+        },
+        "0xf703-0x300000": {
+          "Text": "0x5",
+          "Action": 11
+        },
+        "0xf728-0x0": {
+          "Text": "0x4",
+          "Action": 11
+        },
+        "0x7f-0x80000": {
+          "Text": "0x1b 0x7f",
+          "Action": 11
+        }
+      }
+    }
+  ]
+}

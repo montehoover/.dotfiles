@@ -107,4 +107,5 @@ Adds a sudoers drop-in rule that lets your user run `sudo` without a password pr
 **Also configured:**
 - SSH key generation + GitHub auth
 - iTerm2 default profile (Dynamic Profile with custom colors and font)
+- iTerm2 "Monte (Claude Code)" profile: iTerm2 switches to it automatically while Claude Code runs (including `claude` over SSH to the Mac mini), and there Cmd+C sends Ctrl+Shift+C so it copies Claude Code's selection. Everywhere else Cmd+C is iTerm2's normal copy.
 - macOS preferences (Dock autohide, Finder show hidden files/path bar/list view/extensions, tap-to-click, hot corner, iCloud screenshots)

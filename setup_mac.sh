@@ -791,15 +791,18 @@ fi
 ITERM_PROFILE_GUID="7812A989-1897-40CB-BE81-10479BF68E9D"
 ITERM_PLIST="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
 ITERM_DYNAMIC_DIR="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
-ITERM_PROFILE_SRC="$SCRIPT_DIR/iterm2/monte-profile.json"
-ITERM_PROFILE_DST="$ITERM_DYNAMIC_DIR/monte-profile.json"
 
-# Generate the dynamic profile with $HOME expanded (iTerm2 needs absolute paths)
+# Generate the dynamic profiles with $HOME expanded (iTerm2 needs absolute paths).
+# monte-profile.json is the main profile. monte-claude-profile.json inherits from it
+# and iTerm2 switches to it automatically while Claude Code runs (Cmd+C copies there).
 mkdir -p "$ITERM_DYNAMIC_DIR"
-# Remove old symlink from previous dotbot-managed installs
-[ -L "$ITERM_PROFILE_DST" ] && rm "$ITERM_PROFILE_DST"
-sed "s|__HOME__|$HOME|g" "$ITERM_PROFILE_SRC" > "$ITERM_PROFILE_DST"
-echo "  ✓ iTerm2 dynamic profile generated with home=$HOME"
+for ITERM_PROFILE_SRC in "$SCRIPT_DIR"/iterm2/*.json; do
+    ITERM_PROFILE_DST="$ITERM_DYNAMIC_DIR/$(basename "$ITERM_PROFILE_SRC")"
+    # Remove old symlink from previous dotbot-managed installs
+    [ -L "$ITERM_PROFILE_DST" ] && rm "$ITERM_PROFILE_DST"
+    sed "s|__HOME__|$HOME|g" "$ITERM_PROFILE_SRC" > "$ITERM_PROFILE_DST"
+    echo "  ✓ iTerm2 dynamic profile $(basename "$ITERM_PROFILE_SRC") generated with home=$HOME"
+done
 
 if [[ "$(defaults read com.googlecode.iterm2 "Default Bookmark Guid" 2>/dev/null)" == "$ITERM_PROFILE_GUID" ]]; then
     echo "  ✓ iTerm2 default profile (already configured)"
